@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 900px;
+        height: 600px;
+        margin: auto;
+      }
+      #aside {
+        width: 200px;
+        height: 600px;
+        background-color: darkkhaki;
+        float: left;
+      }
+      table {
+        margin-top: 30px;
+      }
+      #section {
+        width: 700px;
+        height: 600px;
+        background-color: gainsboro;
+        float: left;
+        position: relative;
+        background-image: url(../../images/shooting/bg.jpg);
+      }
+      button {
+        width: 60px;
+        height: 45px;
+        background-color: aquamarine;
+        border-radius: 5px;
+      }
+      #hero {
+        position: absolute;
+        left: 200px;
+        top: 200px;
+        width: 100px;
+        height: 90px;
+      }
+    </style>
+    <script>
+      let pic_top = 200;
+      let pic_left = 200;
+
+      function setUp() {
+        pic_top = pic_top - 30;
+        if (pic_top < 0) pic_top = 0;
+        document.querySelector("#hero").style.top = pic_top + "px";
+        document.querySelector("#hero").style.transform = "rotate(270deg)";
+      }
+      function setDown() {
+        pic_top = pic_top + 30;
+        if (pic_top > 510) pic_top = 510;
+        document.querySelector("#hero").style.top = pic_top + "px";
+        document.querySelector("#hero").style.transform = "rotate(90deg)";
+      }
+      function setLeft() {
+        pic_left = pic_left - 30;
+        if (pic_left < 0) pic_left = 0;
+        document.querySelector("#hero").style.left = pic_left + "px";
+        document.querySelector("#hero").style.transform = "scaleX(-1)";
+      }
+      function setRight() {
+        pic_left = pic_left + 30;
+        if (pic_left > 400) pic_left = 400;
+        document.querySelector("#hero").style.left = pic_left + "px";
+        document.querySelector("#hero").style.transform = "scaleX(1)";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="aside">
+        <table>
+          <tr>
+            <td></td>
+            <td><button onclick="setUp()">↑</button></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><button onclick="setLeft()">←</button></td>
+            <td><button onclick="setDown()">↓</button></td>
+            <td><button onclick="setRight()">→</button></td>
+          </tr>
+        </table>
+      </div>
+      <div id="section">
+        <img id="hero" src="../../../images/shooting/plane.png" alt="" />
+      </div>
+    </div>
+  </body>
+</html>

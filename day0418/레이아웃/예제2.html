@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 1000px;
+        /* 너비는 제한을 둬도 되지만, 높이는 컨텐츠양에 좌우되므로
+        제한을 둬서는 아니된다 */
+        margin: auto;
+      }
+      #header {
+        height: 50px;
+        background-color: rgb(113, 210, 223);
+        /* 이 요소 차지하고 남은 공간에 대한 좌,우 여백을 양쪽에 똑같이 배분한다*/
+      }
+      #aside {
+        width: 100px;
+        height: 400px;
+        background-color: blueviolet;
+      }
+      #section {
+        width: 900px;
+        height: 400px;
+        background-color: rgb(107, 124, 221);
+      }
+      #footer {
+        height: 100px;
+        background-color: rgb(212, 172, 97);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">헤더 영역</div>
+      <div>
+        <div id="aside">사이드바 영역</div>
+        <div id="section">섹션 영역</div>
+      </div>
+      <div id="footer">푸터 영역</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 800px;
+        height: 650px;
+        margin: auto;
+      }
+      #aside {
+        width: 200px;
+        height: 650px;
+        background-color: red;
+        float: left;
+      }
+      #section {
+        width: 600px;
+        height: 650px;
+        background-color: blue;
+        float: left;
+      }
+      #aside > div {
+        height: 160 px;
+        background-color: green;
+      }
+      img {
+        width: 50px;
+      }
+      img:hover {
+        border: 3px solid red;
+        border-radius: 50%;
+      }
+    </style>
+    <script>
+      // 문서내의 pic 이라는 아이디를 갖는 요소에 적용된 css 중 opacity 값을
+      // 0에 가깝도록 음수값을 누적시켜보자
+      let op = 1;
+      function setOpa() {
+        op = op - 0.1; // 소수점 계산 시 오차 발생
+        let pic = document.querySelector("#pic"); // 여전사 이미지를 변수에 담음
+        pic.style.opacity = op;
+        console.log(op);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="aside">
+        <div>
+          투명도 조절<br />
+          <img src="../../../images/cssControl/plus_btn.png" alt="" />
+          <img
+            src="../../../images/cssControl/minus_btn.png"
+            alt=""
+            onClick="setOpa()"
+          />
+        </div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div id="section">
+        <img src="../../../images/cssControl/warior.png" id="pic" alt="" />
+      </div>
+    </div>
+  </body>
+</html>
