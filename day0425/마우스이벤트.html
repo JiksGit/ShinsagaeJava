@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      addEventListener("mousemove", function () {
+        // mouseMove로 할 시 실행 x, mousemove <= 정해진 문자열 리터럴
+
+        //사용자가 일으킨 모든 이벤트는 event 객체가 알고있다..
+        //저번 예제에서는 키보드 이벤트도 얻어왔었다.. ex) event.keyCode
+        let x = event.clientX; //마우스의 x좌표
+        let y = event.clientY; //마우스의 y좌표
+
+        console.log(`x=${x}, y=${y}`);
+      });
+    </script>
+  </head>
+  <body></body>
+</html>

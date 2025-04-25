@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0px;
+      }
+      #wrapper {
+        width: 850px;
+        height: 550px;
+      }
+      #content {
+        width: 700px;
+        height: 100%;
+        float: left;
+        background-color: green;
+        position: relative;
+      }
+      #aside {
+        width: 150px;
+        height: 100%;
+        float: left;
+        background-color: yellow;
+      }
+    </style>
+    <script>
+      // 프로그램에서 자주 사용될 가능성이 있는 요소들을 초기화 작업시, 전역변수화
+      let content;
+      let aside;
+      let f_top = 20;
+      let d_top = 40;
+      let burger; // 다른 함수 영역(scope)에서도 접근할 수 있도록 전역으로 빼놓자
+      let flag = false; //
+
+      function createFood() {
+        burger = document.createElement("img");
+        burger.src = `../../../images/fruit/burger.png`;
+        burger.style.width = 50 + "px";
+        burger.style.left = 130 + "px";
+        burger.style.top = f_top + "px";
+        burger.style.position = "absolute";
+
+        //음식이 따라다니고, 안 따라다니고의 기준은 flag변수이므로,
+        //유저를 배려하여, 클릭시마다 논리값을 뒤집어버리자
+        burger.addEventListener("click", function () {
+          flag = !flag;
+          if (flag) {
+            this.style.border = "3px solid red";
+            this.style.borderRadius = "15px";
+          } else {
+            this.style.border = "none";
+          }
+        });
+
+        content.appendChild(burger);
+        f_top += 180;
+      }
+      function createDish() {
+        let img = document.createElement("img");
+        img.src = `../../../images/fruit/plate.png`;
+        img.style.width = 240 + "px";
+        img.style.left = 380 + "px";
+        img.style.top = d_top + "px";
+        img.style.position = "absolute";
+        content.appendChild(img);
+        d_top += 240;
+      }
+      //프로그램이 가동되면, 초기화할 작업이 있을경우 초기화 함수를 정의하는게 좋은방법
+      function init() {
+        content = document.getElementById("content");
+        aside = document.getElementById("aside");
+        for (let i = 0; i < 2; i++) {
+          createDish(); // 접시 시키기
+        }
+        for (let i = 0; i < 3; i++) {
+          createFood(); // 음식 시키기
+        }
+        // 문서 전체를 대상으로 마우스 이벤트를 연결하자
+        document.body.addEventListener("mousemove", function () {
+          // 마우스에 의한 x, y좌표를 햄버거의 좌표와 일치시키면 따라다니는 효과 적용
+          let x = event.clientX;
+          let y = event.clientY;
+
+          // 아래의 조건 식은 flag에 따라 수행될지 말지가 결정된다...
+          if (flag) {
+            // 유효한 범위라면...
+            if (x <= 670 && y <= 515) {
+              burger.style.left = x - 25 + "px";
+              burger.style.top = y - 25 + "px";
+            }
+          }
+
+          aside.innerHTML = aside.innerHTML + `x=${x}, y=${y}<br>`;
+        });
+      }
+
+      // 문서가 로드된 이후에 작업을 진행해야함!
+      addEventListener("load", function () {
+        init();
+      });
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="content"></div>
+      <div id="aside"></div>
+    </div>
+  </body>
+</html>

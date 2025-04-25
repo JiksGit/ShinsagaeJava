@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #box {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: red;
+        position: absolute;
+        left: 0px;
+        top: 150px;
+      }
+    </style>
+    <script>
+      let box;
+      let b_left = 0;
+      let flag = false;
+      // 문서내의 빨간 원의 css 중 position left값을 증가시킨다
+      function move() {
+        b_left += 30;
+        box = document.getElementById("box");
+        box.style.left = b_left + "px";
+      }
+
+      function autoMove() {
+        b_left += 30;
+        box = document.getElementById("box");
+        box.style.left = b_left + "px";
+        setTimeout("autoMove()", 1000);
+      }
+
+      addEventListener("load", function () {
+        let m = document.getElementById("manual");
+
+        m.addEventListener("click", function () {
+          move();
+        });
+
+        let a = document.getElementById("auto");
+        a.addEventListener("click", function () {
+          autoMove();
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <input type="button" value="수동" id="manual" />
+    <input type="button" value="자동" id="auto" />
+
+    <div id="box"></div>
+  </body>
+</html>
