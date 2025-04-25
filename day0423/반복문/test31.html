@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <script>
+    let tr_N;
+    let td_N;
+    function init() {
+      tr_N = prompt("행의 숫자를 적으세요");
+      td_N = prompt("열의 숫자를 적으세요");
+
+      setTable();
+    }
+    function setTable() {
+      document.write("<table style='background-color:red;'>");
+      for (let i = 1; i <= tr_N; i++) {
+        document.write("<tr>");
+        for (let j = 1; j <= td_N; j++) {
+          document.write(
+            "<td style='width:200px;height:250px;border:1px;background-color:blue'></td>"
+          );
+        }
+        document.write("</tr>");
+      }
+      document.write("</table>");
+    }
+  </script>
+  <body onload="init()"></body>
+</html>

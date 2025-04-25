@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      let n = prompt("몇 층짜리 건축물을 원하세요?");
+      let h = prompt("몇 호수까지 원하세요");
+
+      document.write("<table border='1px'>");
+      for (let i = n; i >= 1; i--) {
+        document.write("<tr>");
+        for (let j = 1; j <= h; j++) {
+          document.write(`<td>${i}0${j}호수</td>`);
+        }
+        document.write("</tr>");
+      }
+      document.write("</table>");
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style></style>
+    <script>
+      function showInput() {
+        let n = prompt("과일을 선택하세요\n 1.사과 2. 바나나 3");
+        n = parseInt(n);
+        let img = document.querySelector("img");
+        let filename;
+
+        switch (n) {
+          case 1:
+            filename = "apple.png";
+            break;
+          case 2:
+            filename = "banana.png";
+            break;
+          case 3:
+            filename = "mango.png";
+            break;
+          case 4:
+            filename = "melon.png";
+            break;
+          case 5:
+            filename = "rasberry.png";
+            break;
+        }
+        filename = "../../../images/fruit/" + filename;
+        img.src = filename;
+      }
+    </script>
+  </head>
+  <body onload="ChooseFoot()">
+    <button onclick="showInput()">프롬프트 출력</button>
+    <img src="" alt="" />
+  </body>
+</html>
