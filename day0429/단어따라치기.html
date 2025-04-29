@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 400px;
+        height: 650px;
+        margin: auto;
+      }
+      #content {
+        border-radius: 5px;
+        height: 200px;
+        background-color: rgb(169, 252, 255);
+        text-align: center;
+        font-size: 80px;
+        font-weight: bold;
+        line-height: 200px;
+      }
+      #input_area {
+        border-radius: 5px;
+        height: 100px;
+        background-color: rgb(153, 255, 106);
+        text-align: center;
+      }
+      #input_area input {
+        width: 97%;
+        height: 97%;
+        border-radius: 5px;
+        border: 0px;
+        font-size: 65px;
+        text-align: center;
+      }
+      #feedback {
+        border-radius: 5px;
+        height: 150px;
+        background-color: #3180db;
+        text-align: center;
+        font-size: 80px;
+        font-weight: bold;
+        line-height: 150px;
+      }
+      #score {
+        border-radius: 5px;
+        height: 100px;
+        background-color: rgb(219, 76, 224);
+        text-align: center;
+        font-size: 45px;
+        font-weight: bold;
+        line-height: 100px;
+      }
+      #time {
+        border-radius: 5px;
+        height: 100px;
+        background-color: rgba(214, 3, 3, 0.829);
+        text-align: center;
+        font-size: 45px;
+        font-weight: bold;
+        line-height: 100px;
+      }
+    </style>
+    <script>
+      let wordArray = [
+        "후렌치파이",
+        "참치회",
+        "회덮밥",
+        "날치알",
+        "연어알",
+        "장어덮밥",
+        "고등어구이",
+        "김치찌개",
+        "된장찌개",
+      ];
+      let content, input, feedback, score;
+      let i = 0,
+        count = 0,
+        sum = 0,
+        begin,
+        time,
+        end;
+
+      // 게임에 사용할 단어를 출력하는 함수
+      function printWord() {
+        content.innerText = wordArray[i];
+      }
+
+      function next() {
+        i++;
+        if (i == 9) {
+          end = new Date().getMilliseconds();
+          time = end - begin;
+          score.innerText = `${time}`;
+          content.innerText = "게임 종료";
+        } else printWord();
+        count++;
+      }
+
+      // 초기화 함수
+      function init() {
+        content = document.getElementById("content");
+        input = document.querySelector("#input_area input");
+        feedback = document.getElementById("feedback");
+        score = document.getElementById("score");
+
+        // 텍스트 박스에 키 이벤트 연결
+        input.addEventListener("keyup", function (e) {
+          // console.log(e); // ENTER -> keyCode : 13
+          if (e.keyCode == 13) {
+            if (content.innerText == input.value) {
+              next();
+              feedback.innerText = "O";
+            } else {
+              feedback.innerText = "X";
+            }
+            input.value = "";
+            sum++;
+          }
+        });
+        printWord();
+      }
+      function gameLoop() {
+        score.innerText = count * 50 + `점 (${count} / ${sum})`;
+      }
+
+      addEventListener("load", function () {
+        begin = new Date().getMilliseconds();
+        init();
+        setInterval("gameLoop()", 10);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="content"></div>
+      <div id="input_area"><input type="text" /></div>
+      <div id="feedback"></div>
+      <div id="score"></div>
+      <div id="time"></div>
+    </div>
+  </body>
+</html>

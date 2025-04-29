@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../../../lib/common.js"></script>
+
+    <script>
+      let array = [
+        "부대찌개",
+        "라면",
+        "라멘",
+        "회덮밥",
+        "참치마요",
+        "국밥",
+        "감자탕",
+        "된장찌개",
+        "고추장찌개",
+        "칼국수",
+      ];
+
+      function createImg() {
+        let div = document.querySelector("div");
+        div.innerText = array[getRandom(array.length)];
+        div.style.fontSize = "200px";
+      }
+
+      addEventListener("load", function () {
+        setInterval("createImg()", 2000);
+      });
+    </script>
+  </head>
+  <body>
+    <div></div>
+  </body>
+</html>
