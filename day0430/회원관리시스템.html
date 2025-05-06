@@ -8,6 +8,7 @@
       #wrapper {
         width: 1000px;
         height: 600px;
+        margin : auto;
       }
       #aside1 {
         width: 200px;
@@ -78,7 +79,7 @@
 
       //사원 1명 삭제(이차원 배열의 몇층을 제거할 지를 결정짓는다)
       function del() {
-        memberArray.splice(memberArray[currentIndex], 1);
+        memberArray.splice(currentIndex, 1);
         printTable();
       }
 
@@ -95,7 +96,7 @@
         tag += "</tr>";
 
         //실제 데이터 출력 영역
-        for (let i = 0; i < memberArray.length; i++) {
+        for (let i = memberArray.length - 1; i >= 0 ; i--) {
           tag +=
             "<tr align='center' onClick=\"getDetail(" +
             i +
