@@ -1,0 +1,54 @@
+{
+    "storeList": [{
+        "store_name" : "김밥천국",
+        "tel" : "02-335-888",
+        "pos" : "37.509734, 127.054238",
+        "iconImg": "../../images/map/map_icon3.png"
+    }, {
+        "store_name" : "김밥찌개",
+        "tel" : "02-342-888",
+        "pos" : "37.509734, 127.054186",
+        "iconImg": "../../images/map/map_icon1.png"
+    }, {
+        "store_name" : "아몰랑",
+        "tel" : "02-342-1532",
+        "pos" : "37.509732, 127.053448",
+        "iconImg": "../../images/map/map_icon3.png"
+    }, {
+        "store_name" : "스시",
+        "tel" : "010-3422-5432",
+        "pos" : "37.509731, 127.056354",
+        "iconImg": "../../images/map/map_icon1.png"
+    }, {
+        "store_name" : "정라면",
+        "tel" : "010-342-1532",
+        "pos" : "37.509738, 127.057486",
+        "iconImg": "../../images/map/map_icon3.png"
+    }, {
+        "store_name" : "청국짱",
+        "tel" : "010-335-1532",
+        "pos" : "37.508726, 127.058390",
+        "iconImg": "../../images/map/map_icon5.png"
+    }, {
+        "store_name" : "장어덮밥",
+        "tel" : "010-2143-8882",
+        "pos" : "37.509621, 127.055293",
+        "iconImg": "../../images/map/map_icon1.png"
+    }, {
+        "store_name" : "함흥냉면",
+        "tel" : "010-2143-8142",
+        "pos" : "37.509524, 127.055355",
+        "iconImg": "../../images/map/map_icon5.png"
+    }, {
+        "store_name" : "기소야",
+        "tel" : "010-2136-8142",
+        "pos" : "37.509431, 127.055372",
+        "iconImg": "../../images/map/map_icon3.png"
+    }, {
+        "store_name" : "메밀면",
+        "tel" : "010-2533-8142",
+        "pos" : "37.509337, 127.055367",
+        "iconImg": "../../images/map/map_icon5.png"
+    }]
+}
+

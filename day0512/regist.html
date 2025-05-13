@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #header {
+        height: 40px;
+        background-color: rgb(74, 201, 105);
+        line-height: 40px;
+      }
+      #header input[type="file"] {
+        width: 70px;
+      }
+      #content {
+        height: 500px;
+        background-color: rgb(228, 255, 188);
+      }
+      #footer {
+        height: 50px;
+        background-color: aquamarine;
+        line-height: 50px;
+      }
+    </style>
+    <script>
+      let obj;
+      //   alert("나를 생성시킨 오프너의 변수값은 " + window.opener.storeList);
+
+      // 사용자가 선택한 정보를 알고 있는 이벤트 객체를 전달받아서, 파일을 읽어들이자
+      function loadData(e) {
+        console.log(e);
+
+        let file = e.target.files[0]; // 사용자가 선택한 바로 그 메모장...
+
+        // 파일읽기
+        let reader = new FileReader(); // 2008~2014년
+        reader.onload = function (data) {
+          // console.log(data);
+          obj = JSON.parse(data.target.result);
+          console.log(obj);
+
+          printTable(obj);
+        };
+        reader.readAsText(file);
+      }
+      // 등록 시 누적된 맛집들의 리스트를 테이블로 동적 출력
+      function printTable(obj) {
+        let tag = "<table width='100%' border = '1px'>";
+        tag += "<tr>";
+        tag += "<td>No</td>";
+        tag += "<td>상호명</td>";
+        tag += "<td>연락처</td>";
+        tag += "<td>위도경도</td>";
+        tag += "<td>대표사진</td>";
+        tag += "</tr>";
+
+        for (let i = obj.storeList.length - 1; i >= 0; i--) {
+          let store = obj.storeList[i];
+          tag += "<tr>";
+          tag += `<td>${i + 1}</td>`;
+          tag += `<td>${store.store_name}</td>`;
+          tag += `<td>${store.tel}</td>`;
+          tag += `<td>${store.pos}</td>`;
+          tag += `<td>대표사진</td>`;
+          tag += "</tr>";
+        }
+
+        tag += "</table>";
+        document.getElementById("content").innerHTML = tag;
+      }
+
+      // 지도를 보유한 부모창에, 현재 내가 보유한 리스트를 이용하여
+      // 마커 출력
+      function showIcons() {
+        window.opener.registAll(obj);
+        window.close(); // 나의 창 닫기
+      }
+      addEventListener("load", function () {
+        document
+          .querySelector("#header input[type='file']")
+          .addEventListener("change", function (e) {
+            loadData(e);
+          });
+        document
+          .querySelector("#footer button")
+          .addEventListener("click", function () {
+            showIcons();
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <input type="file" />
+    </div>
+    <div id="content">table</div>
+    <div id="footer">
+      <button>지도에 적용하기</button>
+    </div>
+  </body>
+</html>

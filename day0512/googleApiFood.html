@@ -24,6 +24,12 @@
         text-align: center;
         margin: 4px 8px;
       }
+      #preview {
+        width: 120px;
+        height: 120px;
+        border: 2px solid red;
+        border-radius: 5px;
+      }
       #content {
         width: 900px;
         height: 100%;
@@ -40,6 +46,7 @@
     <script>
       let map;
       var x = 7;
+      let profileData; // <img src>에 넣을 바이너리를 문자열화 시킨 데이터
       // let storeList = []; << 새창에서 storeList 변수를 가져오기 위해 ES6 이전의 var로 선언
       var storeList = []; // 등록해놓은 상점들을 모아놓을 일차원 배열...
       // ES6(2015년) 부터 등장한 class가 나오기 이전 시대에는 js에서 객체를
@@ -64,16 +71,19 @@
       function initMap() {
         let mapProp = {
           center: new google.maps.LatLng(37.509734, 127.055399),
-          zoom: 19,
+          zoom: 16,
         };
         map = new google.maps.Map(document.getElementById("content"), mapProp);
       }
+
       // 맛집 1개 등록
       function regist() {
         let store = {
           store_name: document.getElementById("store_name").value,
           tel: document.getElementById("tel").value,
           pos: document.getElementById("pos").value,
+          profileImg: profileData,
+          iconImg: document.getElementById("icon").value,
         };
         // 한개의 상점을 배열에 담기
         storeList.push(store);
@@ -97,11 +107,55 @@
           position: pos,
           animation: google.maps.Animation.DROP,
           icon: {
-            url: "../images/map/map_icon1.png",
+            url: document.getElementById("icon").value,
             scaledSize: new google.maps.Size(35, 35),
           },
         });
+
+        // 마커 이벤트
+        google.maps.event.addListener(marker, "click", function () {
+          map.setZoom(19);
+          map.setCenter(marker.getPosition()); // 마커를 중심으로 한 시점 이동
+          // 새 창 띄우기
+          var infowindow = new google.maps.InfoWindow({
+            content: "<h1>꾸엑</h1> 여기 맛있어요",
+          });
+          infowindow.open(map, marker);
+        });
         marker.setMap(map);
+      }
+
+      function registAll(obj) {
+        // console.log("넘겨받은 데이터 객체는 ", obj);
+        for (let i = 0; i < obj.storeList.length; i++) {
+          let store = obj.storeList[i];
+          let latiLongi = store.pos.split(",");
+          // console.log(latiLongi);
+          let pos = new google.maps.LatLng(
+            parseFloat(latiLongi[0]),
+            parseFloat(latiLongi[1])
+          );
+          let marker = new google.maps.Marker({
+            position: pos,
+            animation: google.maps.Animation.DROP,
+            icon: {
+              url: store.iconImg,
+              scaledSize: new google.maps.Size(35, 35),
+            },
+          });
+
+          // 마커 이벤트
+          google.maps.event.addListener(marker, "click", function () {
+            map.setZoom(19);
+            map.setCenter(marker.getPosition()); // 마커를 중심으로 한 시점 이동
+            // 새 창 띄우기
+            var infowindow = new google.maps.InfoWindow({
+              content: "<h1>꾸엑</h1> 여기 맛있어요",
+            });
+            infowindow.open(map, marker);
+          });
+          marker.setMap(map);
+        }
       }
 
       // 지금까지 누적된 가게들의 목록을 새창으로 보여주기
@@ -113,11 +167,58 @@
         );
       }
 
+      // 대표사진 미리보기
+      function previewImg(e) {
+        // console.log(e);
+        // js는 사용자의 하드디스크 접근 가능? no (보안상)
+        // 하지만 <input type=file> 컴포넌트에 의해 사용자가 파일을 선택하게 되면,
+        // 해당 파일에 대해서는 접근에 대한 수락으로 보고, 제어 가능.
+        // 이때 브라우저는 읽어들인 파일을 제어할 수 있도록 제공되는 객체가 FileReader.
+        // 참고) FileReader는 JS표준이 아니지만, 너무나 많이쓰임. 필수 객체 수준
+        let reader = new FileReader();
+        // 모든 파일은 사람이 읽을 수 있는 지 여부를 기준으로 할 때 단 2가지로 분류
+        // 문서파일 : 예) 메모장(.txt, .java, csv...)
+        // 바이너리 파일 : 예) 이미지, 동영상, psd, excel, class...
+
+        // 크롬 브라우저가 다 읽으면, 우측에 정의한 함수를 호출해줌 (콜백)
+        reader.onload = function (data) {
+          // console.log(data);
+          // 크롬 브라우저가 이미지 바이너리를 문자열화 시켜놓은 결과물(개발자 배려)
+          // 을 img.src에 대입해버리면 된다...
+          document.getElementById("preview").src = profileData;
+          profileData = data.target.result;
+        };
+
+        reader.readAsDataURL(e.target.files[0]); // 파일 읽기
+        console.log(e);
+      }
+
+      // 일괄 등록용 새창을 띄워서, 메모장을 선택하게 한 후, 적용을 누르면
+      // 지도에 마커와 정보가 출력..
+      function batchRegist() {
+        let url = "regist.html";
+        let name = "pop";
+        let options = "width=500px, height=500px";
+
+        window.open(url, name, options);
+      }
+
       addEventListener("load", function () {
+        // 대표 사진 파일 선택했을 때,
+        document
+          .getElementById("profile")
+          .addEventListener("change", function (e) {
+            previewImg(e);
+          });
         document
           .querySelector("#aside_regist :nth-child(7)")
           .addEventListener("click", function () {
             regist();
+          });
+        document
+          .querySelector("#aside_regist :nth-child(8)")
+          .addEventListener("click", function () {
+            batchRegist();
           });
         document
           .querySelector("#aside_regist :nth-child(9)")
@@ -134,13 +235,13 @@
         <input type="text" placeholder="연락처" id="tel" />
         <input type="text" placeholder="위도, 경도" id="pos" />
         <input type="file" id="profile" />
-        <div id="preview">사진 미리보기 영역</div>
-        <select name="" id="icon">
-          <option value="">스마일</option>
-          <option value="">핀</option>
-          <option value="">볼링핀</option>
-          <option value="">이미지3</option>
-          <option value="">이미지4</option>
+        <img id="preview" />
+        <select id="icon">
+          <option value="../../images/map/map_icon1.png">이미지1</option>
+          <option value="../../images/map/map_icon2.jfif">이미지2</option>
+          <option value="../../images/map/map_icon3.png">이미지3</option>
+          <option value="../../images/map/map_icon4.jfif">이미지3</option>
+          <option value="../../images/map/map_icon5.png">이미지4</option>
         </select>
         <button>등록</button>
         <button>일괄등록</button>
