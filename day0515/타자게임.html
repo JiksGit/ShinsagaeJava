@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 1250px;
+        height: 700px;
+        margin: auto;
+      }
+      #aside {
+        width: 150px;
+        height: 100%;
+        background-color: rgba(139, 197, 211, 0.836);
+        float: left;
+      }
+      #aside * {
+        width: 90%;
+      }
+      #content {
+        width: 1100px;
+        height: 100%;
+        background-image: url("../../images/keyboardgame_bg.jpg");
+        background-size: 1100px 700px;
+        opacity: 0.7;
+        float: left;
+        position: relative;
+      }
+      #content span {
+        background-color: yellow;
+      }
+      #box {
+        width: 150px;
+        height: 150px;
+        margin-top: 100px;
+        background-color: rgb(138, 185, 26);
+        position: relative;
+      }
+      #stage {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script src="./js/Hp.js"></script>
+    <script src="./js/Word.js"></script>
+    <script src="../../lib/common.js"></script>
+    <script>
+      let wordArray = []; // 프로그램이 종료될 때 까지 총 4레벨까지 게임 가능한 데이터
+      let hpArray = [];
+      let st;
+      let wordList = []; // 단어 객체 인스턴스가 담겨질 배열 (스트링 아님);
+      let speed = 500; // 게임 스피드
+      let level = 0; // 몇번째 배열을 접근(층수 접근)하는 변수
+      let hpIndex = 0;
+      // 베이스를 담고 있을 전역변수
+
+      // 프로그래밍 언어에서 메모장의 데이터를 바로 사용할 수 없으므로,
+      // 메모장 파일을 읽어들여, 그 결과물인 JSON 문자열을 parsing한 후,
+      // 객체 리터럴로 반환하여 사용하자
+      // 단 파일에 대한 접근은 js가 불가능 함으로, 크롬 브라우저가
+      // 사용자에게 수락을 받은 결과를 얻어와서 처리해야함.
+      function loadData(e) {
+        console.log(e);
+        let file = e.target.files[0]; // 사용자가 수락한 그 파일
+        //파일의 내용 읽기 ( FileReader->  -> readAsText() -> )
+        let reader = new FileReader(); // 1
+        reader.onload = function (data) {
+          // 3
+          console.log("메모장 읽은 결과는 = ", data);
+          let jsonString = data.target.result; // 메모장에 작성된 바로 그 문자열들
+          let obj = JSON.parse(jsonString); // 문자열이므로, 해석(-> 객체로 반환);
+
+          wordArray = obj.wordList;
+          createWord();
+
+          //Start 버튼 활성화
+          //   document.querySelector("button").removeAttribute("disabled");
+        };
+        reader.readAsText(file); // 2
+      }
+
+      function createWord() {
+        let content = document.getElementById("content");
+        for (let i = 0; i < wordArray[level].length; i++) {
+          let word = new Word(
+            content,
+            getRandom(1000),
+            getRandomByRange(-150, 0),
+            wordArray[level][i],
+            "red"
+          );
+          wordList.push(word);
+        }
+      }
+
+      function createHp() {
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            //constructor(container, x, y, width, height, bg, borderColor) {
+            hpArray.push(
+              new Hp(
+                document.getElementById("box"),
+                j * 50,
+                i * 50,
+                48,
+                48,
+                "blue",
+                "green"
+              )
+            );
+          }
+        }
+      }
+
+      function nextStep() {
+        // 모든 단어를 대상으로 tick(), render()
+        for (let i = 0; i < wordList.length; i++) {
+          wordList[i].tick();
+          wordList[i].render();
+        }
+      }
+
+      function gameLoop() {
+        console.log("저 가동중");
+        nextStep();
+      }
+
+      // 단어를 알아맞추는 과정에서, wordList의 길이가 0에 도달하면,
+      // 이 판을 다 클리어했다고 판단하여, 레벨 업그레이드
+      function checkLevel() {
+        if (wordList.length == 0) {
+          alert(level + 1 + "레벨 통과를 축하드립니다~!");
+          level++;
+          speed -= 200;
+          createWord();
+        }
+      }
+
+      // 사용자가 입력한 단어 비교해서 제거 등의 처리..
+      function checkText(obj) {
+        let flag = false;
+        for (let i = 0; i < wordList.length; i++) {
+          let word = wordList[i];
+
+          if (obj.value == word.text) {
+            // word.span.style.background = "blue";
+
+            // 제거하기 (화면에서 제거 + 배열에서도 제거)
+            let content = document.getElementById("content");
+            content.removeChild(word.span);
+
+            wordList.splice(wordList.indexOf(word), 1);
+
+            obj.value = "";
+            flag = true;
+
+            checkLevel();
+          }
+        }
+        if (!flag) {
+          document.getElementById("box").removeChild(hpArray[hpIndex].div);
+          hpArray.splice(hpArray.indexOf(hpIndex), 1);
+          hpIndex++;
+        }
+      }
+
+      function init() {
+        document
+          .querySelector("input[type='file']")
+          .addEventListener("change", function (e) {
+            loadData(e);
+          });
+
+        document
+          .querySelector("#aside button")
+          .addEventListener("click", function () {
+            if (st == undefined) {
+              st = setInterval(gameLoop, speed);
+              this.innerText = "Pause";
+            } else {
+              clearInterval(st);
+              this.innerText = "Start!!";
+              st = undefined;
+            }
+          });
+
+        document
+          .querySelector("#aside input[type='text']")
+          .addEventListener("keyup", function (e) {
+            if (e.keyCode == 13) {
+              // 사용자가 입력한 단어와 화면에 생존해 있는 단어 인스턴스 내부의
+              // span의 innerText 비교
+              checkText(this);
+            }
+          });
+
+        createHp();
+      }
+      addEventListener("load", function () {
+        init();
+      });
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="aside">
+        <input type="file" />
+        <button>Start!!</button>
+        <input type="text" placeholder="단어 입력" />
+        <div id="box"></div>
+      </div>
+      <div id="content"></div>
+    </div>
+  </body>
+</html>
