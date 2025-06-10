@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.sinse.shopadmin.common.config.Config;
+import com.sinse.shopadmin.common.util.DBManager;
 import com.sinse.shopadmin.common.view.Page;
 import com.sinse.shopadmin.config.view.ConfigPage;
 import com.sinse.shopadmin.cs.view.CustomerPage;
@@ -41,7 +42,9 @@ public class AppMain extends JFrame{
 	JLabel la_cs;
 	JLabel la_config;
 	
-	public Connection con; 
+	DBManager dbManager = DBManager.getInstance();
+	
+	Connection con;
 	public Admin admin = new Admin(); // 추후 제거될 예정
 	
 	// 모든 페이지를 담게될 배열
@@ -58,7 +61,7 @@ public class AppMain extends JFrame{
 		la_order = new JLabel("주문관리");
 		la_member = new JLabel("회원관리");
 		la_cs = new JLabel("고객센터");
-		la_config = new JLabel("환경설정");
+		la_config = new JLabel("쇼핑몰관리");
 		
 		//스타일
 		p_north.setPreferredSize(new Dimension(Config.UTIL_WIDTH, Config.UTIL_HEIGHT));
@@ -90,6 +93,11 @@ public class AppMain extends JFrame{
 		la_config.setPreferredSize(d);
 		
 		Font f = new Font(null, Font.BOLD, 35);
+		la_product.setFont(f);
+		la_order.setFont(f);
+		la_member.setFont(f);
+		la_cs.setFont(f);
+		la_config.setFont(f);
 		
 		//  데이터베이스 접속 해놓기
 		connect();
@@ -126,13 +134,7 @@ public class AppMain extends JFrame{
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				// 데이터베이스 접속 끊기
-				if(con != null) {
-					try {
-						con.close();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-				}
+				dbManager.release(con);
 				// 프로세스 종료
 				System.exit(0);
 			}
@@ -147,21 +149,8 @@ public class AppMain extends JFrame{
 	
 
 	public void connect() {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			con=DriverManager.getConnection(Config.url, Config.user, Config.pass);
-			if(con !=null) {
-				this.setTitle("MySQL 접속 완료");
-			}else {
-				this.setTitle("MySQL 미접속");
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		con = dbManager.getConnection();
 	}
-	
 	
 	// 쇼핑몰에 사용할 모든 페이지 생성 및 부착
 	public void createPage() {

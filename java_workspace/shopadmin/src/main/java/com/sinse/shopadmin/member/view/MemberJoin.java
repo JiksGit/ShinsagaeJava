@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 import com.sinse.shopadmin.AppMain;
 import com.sinse.shopadmin.common.config.Config;
+import com.sinse.shopadmin.common.util.DBManager;
 import com.sinse.shopadmin.common.util.StringUtil;
 import com.sinse.shopadmin.common.view.Page;
 
@@ -104,6 +105,7 @@ public class MemberJoin extends Page{
 			JOptionPane.showMessageDialog(this, "이메일을 입력하세요");
 		} else {
 			// mysql 에 insert
+			
 			StringBuffer sql = new StringBuffer();
 			sql.append("insert into admin(id, pwd, name, email)");
 			sql.append(" values(?,?,?,?)");
