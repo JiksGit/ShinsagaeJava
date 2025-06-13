@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -23,14 +22,13 @@ import com.sinse.shopadmin.common.util.StringUtil;
 import com.sinse.shopadmin.common.view.Page;
 import com.sinse.shopadmin.security.model.Admin;
 
-public class LoginForm extends Page {
+public class LoginForm extends Page{
 	JLabel la_id;
 	JLabel la_pwd;
 	JTextField t_id;
 	JPasswordField t_pwd;
 	JButton bt_login;
 	JButton bt_join;
-	
 	
 	public LoginForm(AppMain appMain) {
 		super(appMain);
@@ -56,19 +54,20 @@ public class LoginForm extends Page {
 		add(t_pwd);
 		add(bt_login);
 		add(bt_join);
-		
+				
 		bt_login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				loginCheck();
 			}
 		});
+		
 		bt_join.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				appMain.showPage(Config.JOIN_PAGE);
 			}
 		});
 		
-		this.setPreferredSize(new Dimension(270,145));
+		setPreferredSize(new Dimension(270, 145));
 	}
 	
 	public void loginCheck() {
@@ -92,20 +91,18 @@ public class LoginForm extends Page {
 				
 				
 				//로그인 성공한 사람의 정보 담기!!!
-				Admin admin = new Admin();
+				Admin admin= new Admin();//empty 상태의 객체 생성 
 				admin.setAdmin_id(rs.getInt("admin_id"));
 				admin.setId(rs.getString("id"));
 				admin.setPwd(rs.getString("pwd"));
 				admin.setName(rs.getString("name"));
-
-				// AppMain이 보유하고 있는 Admin 모델 객체의 현재 null 값을 위에서 생성한 Admin 대체
-				appMain.admin = admin;
 				
-				// 현재 유저가 보고있는 페이지가 MainPage로 교체
+				//AppMain이 보유하고 있는 Admin 모델객체의 현재 null값을 위에서 생성한 Admin대체
+				appMain.admin=admin;
+				
+				//현재 유저가 보고 있는 페이자가 MainPage로 교체. 
 				appMain.showPage(Config.MAIN_PAGE);
-				
-//				AppMain appMain = new AppMain(커넥션, 아이디, 이름, 비번, pk);
-				
+				//주의 System.exit(0) 은 전체 프로그램이 끝나버림..
 			}else {
 				JOptionPane.showMessageDialog(this, "로그인 실패");
 			}
@@ -129,7 +126,6 @@ public class LoginForm extends Page {
 		}
 		
 	}
-	
 }
 
 

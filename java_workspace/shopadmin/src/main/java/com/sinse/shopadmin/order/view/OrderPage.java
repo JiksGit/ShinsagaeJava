@@ -6,9 +6,8 @@ import com.sinse.shopadmin.AppMain;
 import com.sinse.shopadmin.common.view.Page;
 
 public class OrderPage extends Page{
-
 	public OrderPage(AppMain appMain) {
 		super(appMain);
-		setBackground(Color.DARK_GRAY);
+		setBackground(Color.PINK);
 	}
 }

@@ -3,6 +3,7 @@ package com.sinse.shopadmin.product.model;
 public class Size {
 	private int size_id;
 	private String size_name;
+	
 	public int getSize_id() {
 		return size_id;
 	}

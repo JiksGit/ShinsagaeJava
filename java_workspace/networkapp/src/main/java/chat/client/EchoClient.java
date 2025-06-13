@@ -68,7 +68,7 @@ public class EchoClient extends JFrame implements Runnable{
 			}
 		});
 		
-		setBounds(200, 100, 300,400);
+		setBounds(200, 100, 300, 400);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}

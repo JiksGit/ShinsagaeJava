@@ -6,9 +6,9 @@ import com.sinse.shopadmin.AppMain;
 import com.sinse.shopadmin.common.view.Page;
 
 public class MemberPage extends Page{
-	
+
 	public MemberPage(AppMain appMain) {
 		super(appMain);
-		setBackground(Color.green);
+		setBackground(Color.WHITE);
 	}
 }
