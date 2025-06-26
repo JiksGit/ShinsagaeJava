@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="./js/Cell.js"></script>
+  <script src="./js/MiniCell.js"></script>
+  <script src="./js/DiaryCell.js"></script>
+  <script src="./js/common.js"></script>
+  <script src="./js/crud.js"></script>
+  <script src="./js/printOrCreate.js"></script>
+  <script src="./js/googleMap.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCe4PUIorwSDpG3ZZPLxaPjbWW4ICuNpFM&libraries=places" async defer></script>
+
+  <script>
+    let cellArray = Array.from({ length: 6 }, () => Array(7).fill(0));
+    let minicellArray = Array.from({ length: 6 }, () => Array(7).fill(0));
+    let restArray = []; // 공휴일 배열
+    let diaryArray = []; // 사용자 plan 배열
+    let currentYear;
+    let currentMonth;
+    let miniCurrentYear;
+    let miniCurrentMonth;
+    let currentCell;
+    let st;
+    
+    // 숨겨져 있던, 대화창을 띄우되, 그 위치는 지금 클릭한 바로 그 셀의 x,y를
+    // 따라가야함..
+    function openDialog(obj) {
+      // 현재 다이어로그에 대한 obj값
+        let dialog = document.getElementById("dialog");
+        dialog.style.display = "block";
+        
+        // 팝업의 위치는 사용자가 클릭한 셀의 좌표 바로 아래칸에  일치시키자
+        dialog.style.left = obj.x + "px";
+        dialog.style.top = obj.y + "px";
+        dialog.style.background = "gray";
+        
+        // 넘겨받은 x, y를 이용하여 새 창의 위치를 결정짓자
+        dialog.style.position = "absolute";
+        dialog.style.zIndex = 9999; // 맨 앞으로 이동 - zIndex
+
+        dialog.querySelector(".mini-popup h4").textContent = "일정";
+
+        dialog.querySelector(".mini-popup .info:nth-of-type(1)").innerHTML = `
+          <span class="label">제목:</span><br />
+          ${obj.title || "제목 없음"}
+        `;
+
+        dialog.querySelector(".mini-popup .info:nth-of-type(2)").innerHTML = `
+          <span class="label">장소:</span><br />
+          ${obj.place || "장소 없음"}
+        `;
+        //  지도 출력
+        const geocoder = new google.maps.Geocoder();
+        const place = obj.place || ""; // 강남구
+
+        if (place !== "") {
+          document.getElementById("map").style.display= "block";
+          geocoder.geocode({ address: place }, (results, status) => {
+            if (status === "OK") {
+              // geocoder가 반환해준 results의 geometry 정보 중 location 저장
+              const location = results[0].geometry.location; 
+
+              // map 출력
+              const map = new google.maps.Map(document.getElementById("map"), {
+                center: location,
+                zoom: 13,
+                disableDefaultUI: true
+              });
+
+              // 맵의 현재 지역 마커 출력
+              new google.maps.Marker({
+                map: map,
+                animation: google.maps.Animation.DROP,
+                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                position: location,
+                title: place,
+              });
+
+              // ajax로 서울특별시 맛집 json 데이터를 비동기적으로 처리
+              fetch("./seoulFood.json")
+                .then(res => res.json())
+                .then(json => {
+                  // json중에서 place 이름이 포함된 부분만 발췌
+                  let filtered = filterByWord(json, place);
+
+                  // 
+                  geocodeDistrict(place, (location) => {
+                    map.setCenter(location);
+                    showMarkersOnMap(filtered, map);
+                  })
+                })
+            } 
+            else {
+              console.warn("Geocoding 실패:", status);
+              document.getElementById("map").innerHTML = "<p style='color:white;'>지도를 불러올 수 없습니다</p>";
+            }
+          });
+        } else {
+          document.getElementById("map").innerHTML = "<p style='color:white;'>장소 정보 없음</p>";
+          document.getElementById("map").style.display= "none";
+        }
+
+        dialog.querySelector(".mini-popup .info:nth-of-type(3)").innerHTML = `
+          <span class="label">메모:</span><br />
+          ${obj.description || "메모 없음"}
+        `;
+
+        // 메모에서 상세페이지 보여주기
+     document.getElementById("detail-dial").addEventListener("click", () => {
+      formPrint(obj); // ⬅ 폼 먼저 보여주고
+
+      setTimeout(() => {
+        document.querySelector('input[name="title"]').value = obj.title;
+        document.querySelector('textarea[name="description"]').value = obj.description;
+        document.querySelector('select[name="place"]').value = obj.place;
+        document.querySelector('select[name="year"]').value = obj.year;
+        document.querySelector('select[name="month"]').value = obj.month + 1;
+        document.querySelector('select[name="date"]').value = obj.date;
+        document.querySelector('select[name="color"]').value = obj.bg;
+
+        document.getElementById("update_diary").onclick = () => {
+          update(obj);
+        };
+
+        // 버튼 상태 설정
+        document.getElementById("update_diary").style.display = "block";
+        document.getElementById("save_diary").style.display = "none";
+
+      }, 10); // 약간의 지연 → DOM 반영 이후 실행
+    });
+    }
+
+    function restPrint(){
+    let tag = "<table>";
+    tag += "<tr><th>월</th><th>일</th><th>이름</th></tr>";
+
+    for(let i=0; i < restArray.length; i++){
+      let rest = restArray[i];
+      tag += "<tr>";
+        tag += `<td style="color:red">${rest.month + 1}</td>`;
+        tag += `<td style="color:red">${rest.date}</td>`;
+        tag += `<td style="color:black">${rest.title}</td>`;
+        tag += "</tr>";
+      }
+      
+      tag += "</table>";
+      document.getElementById("rest-div").innerHTML = tag;
+    }
+    
+    function diaryPrint(){
+      let tag = "<table>";
+      tag += "<tr><th>월</th><th>일</th><th>이름</th></tr>";
+      
+      diaryArray.sort((a, b) => {
+        if(a.month == b.month) return a.date - b.date;
+        else return a.month - b.month;
+      });
+      for(let i=0; i < diaryArray.length; i++){
+        let diary = diaryArray[i];
+        tag += "<tr>";
+          tag += `<td style="color:black">${diary.month + 1}</td>`;
+          tag += `<td style="color:black">${diary.date}</td>`;
+          tag += `<td style="color:blue">${diary.title}</td>`;
+          tag += "</tr>";
+        }
+      if(diaryArray.length == 0){
+        tag = `<h3 style="textAlign: center">일정을 추가하세요<h3>`;
+      }
+        
+      tag += "</table>";
+      document.getElementById("rest-div").innerHTML = tag;
+    }
+    
+    function closeDialog(){
+      document.getElementById("dialog").style.display = "none";
+    }
+
+    // 공휴일 버튼 누를 때 날짜 출력
+    function restRoop(){
+      document.getElementById("restPrint_btn").addEventListener("click", function(){
+          st = 1;
+      })
+      if(st == 1)
+      restPrint();
+    }
+        
+    function diaryRoop(){
+      // 공휴일 버튼 누를 때 날짜 출력
+      document.getElementById("diaryPrint_btn").addEventListener("click", function(){
+        st = 2;
+      })
+      if(st == 2)
+      diaryPrint();
+    }
+
+    addEventListener("load", function () {
+      let d = new Date();
+      getCurrentTime(d.getFullYear(), d.getMonth());
+      getMiniCurrentTime(d.getFullYear(), d.getMonth());
+      printTitle();
+      createDayHeaders();
+      createCell(); 
+      diaryCellPrint(); 
+
+      document.getElementById("food_search").addEventListener("click", function(){
+          window.open(
+          "http://127.0.0.1:5501/foodSearch.html",
+          "_blank",
+          "width=750px,height=560px,left=600px,top=138px;"
+        );
+      })
+
+      document.getElementById("save_diary").addEventListener("click", function(){
+        regist();
+      });
+
+      setInterval(diaryRoop, 10);
+      setInterval(restRoop, 10);
+
+
+      // 새 창 닫기 이벤트 구현
+      document.getElementById("close-dial").addEventListener("click", () => {
+        closeDialog();
+      });
+
+      document.getElementById("btn-today").addEventListener("click", () => {
+        now();
+      });
+
+      /* 미니 달력 버튼 구현 */
+      document.getElementById("mini_section").addEventListener("click", () =>{
+        getCurrentTime(miniCurrentYear, miniCurrentMonth+1);
+        prev();
+      });
+      document.getElementById("mini_prev").addEventListener("click", () =>{
+        miniPrev();
+      });
+       document.getElementById("mini_next").addEventListener("click", () =>{
+        miniNext();
+      });
+
+
+      // 공휴일 JSON 데이터 비동기식 Fetch로 불러오기
+      fetch("./data.txt")
+        .then(response => response.text())
+        .then(text => {
+          let obj = JSON.parse(text);
+          restArray = obj.restList;
+          printNum();
+          printMiniNum();
+        })
+        .catch(err => {
+          console.error("공휴일 데이터 불러오기 실패", err);
+          printNum(); // 데이터가 없어도 출력은 해야 함
+          printMiniNum();
+        });
+
+    }); 
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+      <div id="header">
+        <div class="header-left">
+          <span class="logo">📅 My Calendar</span>
+        </div>
+        <div>
+          <button id="food_search">맛집검색</button>
+        </div>
+        <div class="header-right">
+          <span class="user">환영합니다, 현직님</span>
+          <!-- 추후 아이콘, 설정 메뉴 추가 가능 -->
+        </div>
+      </div>
+    <div id="container">
+      <div id="aside_nav">
+        <div id="mini_calendar">
+          <div class="mini-header">
+            <button class="mini-prev" id="mini_prev">◀</button>
+            <span class="mini-title">2025.05</span>
+            <button class="mini-next" id="mini_next">▶</button>
+          </div>
+          <div class="mini-days">
+            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+          </div>
+          <div class="mini-grid" id="mini_section">
+            <!-- 날짜 1~31일 동적으로 출력될 예정 -->
+            <!-- <div>1</div><div>2</div>... -->
+          </div>
+        </div>
+        <div>
+          <div>
+            <button id="restPrint_btn">공휴일 출력</button>
+            <button id="diaryPrint_btn">일정 출력</button>
+            <div id="rest-div">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="content">
+        <div id="content_header">
+          <div class="left-controls">
+            <a href="javascript:prev()">◀</a>
+            <h2>2025.05</h2>
+            <a href="javascript:next()">▶</a>
+            <button id="btn-today">오늘</button>
+          </div>
+        </div>
+        <div id="date_print" ></div> 
+        <div id="content_section">
+          <div id="dialog" style="display: none;">
+             <div class="mini-popup">
+                <h4>일정</h4>
+                <div class="info">
+                  <span class="label">제목:</span><br />
+                  나는제목
+                </div>
+                <div class="info">
+                  <span class="label">장소:</span><br />
+                  나는장소
+                </div>
+                <div class="info">
+                  <span class="label">메모:</span><br />
+                  나는디테일
+                </div>
+                <div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
+                <button id="close-dial">닫기</button>
+                <button id="detail-dial">상세 정보</button>
+            </div>  
+          </div>
+        </div>
+        <div id="holder_header"></div>
+        <div id="holder" style="display: none;">
+          <form id="event-form" name="form1">
+            <h3>새로운 일정 등록</h3>
+
+            <label>
+              제목  
+              <input type="text" name="title" placeholder="제목을 입력하세요" />
+            </label>
+
+            <label>
+              장소  
+              <select name="place">
+                <option value="">장소를 선택하세요</option>
+                <option value="강남구">강남구</option>
+                <option value="강동구">강동구</option>
+                <option value="강북구">강북구</option>
+                <option value="강서구">강서구</option>
+                <option value="관악구">관악구</option>
+                <option value="광진구">광진구</option>
+                <option value="구로구">구로구</option>
+                <option value="금천구">금천구</option>
+                <option value="노원구">노원구</option>
+                <option value="도봉구">도봉구</option>
+                <option value="동대문구">동대문구</option>
+                <option value="동작구">동작구</option>
+                <option value="마포구">마포구</option>
+                <option value="서대문구">서대문구</option>
+                <option value="서초구">서초구</option>
+                <option value="성동구">성동구</option>
+                <option value="성북구">성북구</option>
+                <option value="송파구">송파구</option>
+                <option value="양천구">양천구</option>
+                <option value="영등포구">영등포구</option>
+                <option value="용산구">용산구</option>
+                <option value="은평구">은평구</option>
+                <option value="종로구">종로구</option>
+                <option value="중구">중구</option>
+                <option value="중랑구">중랑구</option>
+              </select>
+            </label>
+
+            <label>
+              일시  
+              <div style="display: flex; gap: 5px;">
+                <select name="year">
+                  <option value="">년</option>
+                  <script>
+                    currentYear = new Date().getFullYear();
+                    for (let y = currentYear - 3; y <= currentYear + 3; y++) {
+                      document.write(`<option value="${y}">${y}년</option>`);
+                    }
+                  </script>
+                </select>
+                <select name="month">
+                  <option value="">월</option>
+                  <script>
+                    for (let m = 1; m <= 12; m++) {
+                      document.write(`<option value="${m}">${m}월</option>`);
+                    }
+                  </script>
+                </select>
+                <select name="date">
+                  <option value="">일</option>
+                  <script>
+                    for (let d = 1; d <= 31; d++) {
+                      document.write(`<option value="${d}">${d}일</option>`);
+                    }
+                  </script>
+                </select>
+              </div>
+            </label>
+            <label>
+              색상  
+              <select name="color">
+                <option value="">색상 선택하세요</option>
+                <option value="#f28b82">빨간색</option>
+                <option value="#fbbc04">주황색</option>
+                <option value="#fff475">노란색</option>
+                <option value="#ccff90">연두색</option>
+                <option value="#a7ffeb">민트색</option>
+                <option value="#cbf0f8">하늘색</option>
+                <option value="#aecbfa">파란색</option>
+                <option value="#d7aefb">보라색</option>
+                <option value="#fdcfe8">분홍색</option>
+                <option value="#e6c9a8">갈색</option>
+                <option value="#e8eaed">회색</option>
+              </select>
+            </label>
+
+            <label>
+              설명  
+              <textarea name="description" rows="5" placeholder="설명을 입력하세요"></textarea>
+            </label>
+
+            <div class="form-buttons">
+              <button type="button" class="save-btn" id="save_diary">✔ 저장</button>
+              <button type="button" class="update-btn" id="update_diary" style="display: none;">변경</button>
+              <button type="button" class="cancel-btn" onclick="form1.reset(); now();">취소</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+    </div>
+  </div>
+</body>
+</html>
