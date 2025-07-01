@@ -61,7 +61,7 @@ tr:nth-child(even) {
   
   <tr>
     <td><%= notice.getNotice_id() %></td>
-    <td><a href="#"><%= notice.getTitle() %></a></td>
+    <td><a href="/notice/content.jsp?notice_id=<%=notice.getNotice_id()%>"><%= notice.getTitle() %></a></td>
     <td><%= notice.getWriter() %></td>
     <td><%= notice.getRegdate() %></td>
     <td><%= notice.getHit() %></td>

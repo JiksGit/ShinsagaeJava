@@ -28,5 +28,12 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<version>8.0.32</version>  <!-- 최신 버전으로 변경하세요 -->
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.6</version>
+		</dependency>
 	</dependencies>
 </project>

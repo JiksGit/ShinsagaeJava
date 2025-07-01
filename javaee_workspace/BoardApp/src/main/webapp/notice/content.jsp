@@ -1,4 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
+<%
+	// 요청 객체로 부터 파라미터 뽑아내기
+	// jsp는 Servlet이 포함하고 있으니, request 객체가 Servlet 코드에 이미 존재
+	// 그래서 이 스크립틀릿 영역은 이 jsp가 서블릿으로 변경되어 질 때, service() 메서드 영역이므로, 이미 service()메서드의
+	// 매개변수 요청 객체와 응답객체를 넘겨받은 상탱..
+	// service(HttpServletRequest request, HttpServletResponse response)
+	String notice_id = request.getParameter("notice_id");
+	
+	String sql = "select * from notice where notice_id = " + notice_id;
+	out.print(sql);
+%>
 <!DOCTYPE html>
 <html>
 <head>

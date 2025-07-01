@@ -50,8 +50,22 @@ public class NoticeDAO {
 	}
 
 	// 한 건 가져오기
-	public Notice select() {
-		return null;
+	public Notice select(int notice_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		
+		Notice notice = new Notice();
+		con = poolManager.getConnection();
+		StringBuffer sql = new StringBuffer();
+		sql.append("select * from notice where notice_id = ?");
+		try {
+			pstmt = con.prepareStatement(sql.toString());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		pstmt.setInt(1, notice_id);
+		
+		return notice;
 	}
 
 	// 한 건 넣기
