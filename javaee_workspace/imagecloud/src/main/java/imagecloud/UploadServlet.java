@@ -1,9 +1,13 @@
 package imagecloud;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.List;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,12 +17,20 @@ import com.oreilly.servlet.MultipartRequest;
 
 // 클라이언트가 전송한 텍스트 데이터, 바이너리 데이터까지 처리해보기
 public class UploadServlet extends HttpServlet{
-	
-	String savePath = "C:/lecture_workspace/back_workspace/javaee_workspace/imagecloud/src/main/webapp/public"; //바이너리 파일이 저장될 서버의 경로
-	int maxLimit = 2 * 1024 * 1024; // 유지보수 목적상 풀어서 계산
-	
+
+//	String savePath = "C:/lecture_workspace/back_workspace/javaee_workspace/imagecloud/src/main/webapp/public"; //바이너리 파일이 저장될 서버의 경로
+	int maxLimit = 3 * 1024 * 1024; // 유지보수 목적상 풀어서 계산
+	String realPath;
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		ServletContext application = config.getServletContext();
+		realPath=application.getRealPath("/public");
+	};
 	// 클라이언트가 상당히 많은 양의 바이너리로 요청을 시도하므로, 당연히 post로 전송을 하기 때문에
 	// doXXX형 메서드 중 doPost로 처리한다
+
+	
+	// cos.jar 버전
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		request.setCharacterEncoding("utf-8"); // 전송되어 지는 파라미터의 값들이 깨지지 않도록 인코딩 지정
@@ -27,7 +39,7 @@ public class UploadServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 		
 		try {
-			MultipartRequest multi = new MultipartRequest(request, savePath, maxLimit, "utf-8");
+			MultipartRequest multi = new MultipartRequest(request, realPath, maxLimit, "utf-8");
 			System.out.println("업로드 성공");
 			
 			// 텍스트 파라미터 추출, 파일 업로드 컴포넌트를 이용하면, 파라미터 추출 마저도 업로드 컴포넌트를 이용!
