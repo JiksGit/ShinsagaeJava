@@ -7,7 +7,7 @@ import lombok.Data;
 public class Notice {
 	private int notice_id;
 	private String title;
-	private String write;
+	private String writer;
 	private String content;
 	private String regdate;
 	private int hit;
