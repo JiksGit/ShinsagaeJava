@@ -1,21 +1,24 @@
+<%@page import="com.sinse.boardapp.model.Notice"%>
+<%@page import="com.sinse.boardapp.repository.NoticeDAO"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
+<%! NoticeDAO noticeDAO=new NoticeDAO(); %>
 <%
-	// 요청 객체로 부터 파라미터 뽑아내기
-	// jsp는 Servlet이 포함하고 있으니, request 객체가 Servlet 코드에 이미 존재
-	// 그래서 이 스크립틀릿 영역은 이 jsp가 서블릿으로 변경되어 질 때, service() 메서드 영역이므로, 이미 service()메서드의
-	// 매개변수 요청 객체와 응답객체를 넘겨받은 상탱..
-	// service(HttpServletRequest request, HttpServletResponse response)
-	String notice_id = request.getParameter("notice_id");
+	//요청 객체로부터 파라미터 뽑아내기
+	//이 스크립틀릿 영역은 이 jsp가 서블릿으로 변경되어질때, service() 메서드 영역이므로, 이미 service()메서드
+	//의 매개변수 요청 객체와 응답객체를 넘겨받은 상태..
+	//service(HttpServletRequest request, HttpServletResponse response)
+	String notice_id=request.getParameter("notice_id");
 	
-	String sql = "select * from notice where notice_id = " + notice_id;
-	out.print(sql);
+	//String sql="select * from notice where notice_id="+notice_id;
+	//out.print(sql);	
+	Notice notice=noticeDAO.select(Integer.parseInt(notice_id));
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="UTF-8">
-
 <style>
 body {font-family: Arial, Helvetica, sans-serif;}
 * {box-sizing: border-box;}
@@ -31,7 +34,7 @@ input[type=text], select, textarea {
   resize: vertical;
 }
 
-input[type=submit] {
+input[type=button] {
   background-color: #04AA6D;
   color: white;
   padding: 12px 20px;
@@ -40,7 +43,7 @@ input[type=submit] {
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type=button]:hover {
   background-color: #45a049;
 }
 
@@ -50,7 +53,6 @@ input[type=submit]:hover {
   padding: 20px;
 }
 </style>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- include libraries(jQuery, bootstrap) -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
@@ -60,48 +62,52 @@ input[type=submit]:hover {
 <!-- include summernote css/js -->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-
 <script type="text/javascript">
-$(()=>{
-	//서머노트 연동
-	$("#content").summernote({
-		height: 250
-	});
-	
-	$("input[type='button']").click(()=>{
-		$("form").attr({
-			action:"/notice/regist",
-			method:"POST", // 머리에 데이터를 실어 나르게 됨, 따라서 편지 봉투에 나르는 격, 문제1) 노출, 문제2) 용량	
+	$(()=>{		
+		$("#content").summernote({
+			height:250,
+		});	//서머노트 연동 
+		$("#content").summernote('code', "<%=notice.getContent()%>");
+		
+		// 버튼에 이벤트 연결
+		// 0번째 - 수정
+		$("#bt_edit").click(()=>{
+			
 		});
-		$("form").submit(); //전송
+		
+		// 1번째 - 삭제
+		$("#bt_del").click(()=>{
+			if(confirm("삭제하시겠어요?")){
+				//Get방식 요청(링크)
+				location.href="/notice/del?notice_id=<%= notice_id %>";
+			}
+		});
+		// 2번째 - 목록
+		$("#bt_list").click(()=>{
+			
+		});
+		
+		
 	});
-});
-
 </script>
 </head>
 <body>
-
 <h3>Contact Form</h3>
 
 <div class="container">
-  <form action="/action_page.php">
+  <form>
     <label for="fname">Title</label>
-    <input type="text" id="fname" name="title" placeholder="제목 입력">
+    <input type="text" id="fname" name="title" value="<%=notice.getTitle()%>">
 
     <label for="lname">Writer</label>
-    <input type="text" id="lname" name="writer" placeholder="작성자 입력">
+    <input type="text" id="lname" name="writer" value="<%=notice.getWriter()%>">
 
-    <label for="country">Content</label>
-    <select id="country" name="country">
-      <option value="australia">Australia</option>
-      <option value="canada">Canada</option>
-      <option value="usa">USA</option>
-    </select>
+    <label for="subject">Content</label>
+    <textarea id="content" name="content" placeholder="내용입력" style="height:200px"></textarea>
 
-    <label for="subject">Subject</label>
-    <textarea id="content" name="content" placeholder="Write something.." style="height:200px"></textarea>
-
-    <input type="button" value="Submit">
+    <input type="button" value="등록" id="bt_edit">
+    <input type="button" value="삭제" id="bt_del">
+    <input type="button" value="목록" id="bt_list">
   </form>
 </div>
 
