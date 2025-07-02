@@ -72,7 +72,14 @@ input[type=button]:hover {
 		// 버튼에 이벤트 연결
 		// 0번째 - 수정
 		$("#bt_edit").click(()=>{
-			
+			if(confirm("수정하시겠어요?")){
+				// 서버로 전송
+				$("form").attr({
+					method : "POST",
+					action : "/notice/update"
+				});
+				$("form").submit();
+			};
 		});
 		
 		// 1번째 - 삭제
@@ -80,7 +87,7 @@ input[type=button]:hover {
 			if(confirm("삭제하시겠어요?")){
 				//Get방식 요청(링크)
 				location.href="/notice/del?notice_id=<%= notice_id %>";
-			}
+			};
 		});
 		// 2번째 - 목록
 		$("#bt_list").click(()=>{
@@ -96,6 +103,10 @@ input[type=button]:hover {
 
 <div class="container">
   <form>
+  	<!-- hidden은 html 컴포넌트의 역할을 수행하지만, 시각적으로 표현되지는 않음
+  		노출되지 않은 상태로 데이터를 전송할 때 사용
+  	 -->
+    <input type="hidden" id="fname" name="notice_id" value="<%=notice.getNotice_id()%>">
     <label for="fname">Title</label>
     <input type="text" id="fname" name="title" value="<%=notice.getTitle()%>">
 
@@ -105,7 +116,7 @@ input[type=button]:hover {
     <label for="subject">Content</label>
     <textarea id="content" name="content" placeholder="내용입력" style="height:200px"></textarea>
 
-    <input type="button" value="등록" id="bt_edit">
+    <input type="button" value="수정" id="bt_edit">
     <input type="button" value="삭제" id="bt_del">
     <input type="button" value="목록" id="bt_list">
   </form>
