@@ -20,6 +20,20 @@ input[type=text], select, textarea {
   resize: vertical;
 }
 
+input[type=button] {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=button]:hover {
+  background-color: #45a049;
+}
+
+
 input[type=submit] {
   background-color: #04AA6D;
   color: white;
@@ -40,16 +54,7 @@ input[type=submit]:hover {
 }
 </style>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- include libraries(jQuery, bootstrap) -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-<!-- include summernote css/js -->
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-
+<%@ include file="/inc/head_link.jsp" %>
 <script type="text/javascript">
 $(()=>{
 	//서머노트 연동
@@ -57,9 +62,10 @@ $(()=>{
 		height: 250
 	});
 	
+	// 버튼에 이벤트 연결
 	$("input[type='button']").click(()=>{
 		$("form").attr({
-			action:"/notice/regist",
+			action:"/news/regist",
 			method:"POST", // 머리에 데이터를 실어 나르게 됨, 따라서 편지 봉투에 나르는 격, 문제1) 노출, 문제2) 용량	
 		});
 		$("form").submit(); //전송
