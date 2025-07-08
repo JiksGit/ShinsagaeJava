@@ -69,7 +69,40 @@ public class StoreDAO {
 		
 		return store;
 	}
+	
+	public void update(Store store) throws StoreException{
+		
+		Transaction tx = null;
+		
+		try(Session session = config.getSession()){
+			tx = session.beginTransaction();
+			session.update(store);
+			tx.commit();
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(tx!= null) tx.rollback();
+			throw new StoreException("업데이트 실패", e);
+		}
+	}
+	
+	public void delete(int store_id) throws StoreException{
+		Transaction tx = null;
+		
+		try(Session session = config.getSession()){
+			tx = session.beginTransaction();
+			Store store = session.get(Store.class, store_id); // delete 할 때에 DB에서 가져온다음 객체를 넘겨야함
+			if(store != null) {
+				session.delete(store);				
+			}
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(tx != null) tx.rollback();
+			throw new StoreException("삭제 실패", e);
+		}
+	}
 }
+
 
 
 
