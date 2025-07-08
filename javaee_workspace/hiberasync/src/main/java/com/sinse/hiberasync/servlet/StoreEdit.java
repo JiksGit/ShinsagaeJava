@@ -53,13 +53,15 @@ public class StoreEdit extends HttpServlet{
 		try {
 			storeDAO.update(store);	
 			response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 (update success but return null)
+			message.setResult("success");
+			message.setMsg("수정 성공");
 		} catch (Exception e) {
 			e.printStackTrace();
 			message.setResult("fail");
 			message.setMsg(e.getMessage());
-			String responseMsg = gson.toJson(message);
-			out.print(responseMsg);
 		}
+		String responseMsg = gson.toJson(message);
+		out.print(responseMsg);
 	}
 	
 	

@@ -165,8 +165,8 @@
 				tel : $("#aside_detail input[name='tel']").val()
 			},
 			success : function(result, status, xhr){
-				if(status == 204){
-					// printList(result); <- StoreEdit에서 json으로 반환?					
+				if(xhr.status == 204){
+					getStoreList();
 				}
 			},
 			error : function(xhr, status, err){
@@ -178,7 +178,6 @@
 	
 	// 삭제하기
 	function del(){
-		
 		$.ajax({
 			type: "POST",
 			url:"/store/del",
@@ -186,15 +185,14 @@
 				store_id : $("#aside_detail input[name='store_id']").val()
 			},
 			success : function(result, status, xhr){
-				if(status == 204){
-					// printList(result); <- StoreEdit에서 json으로 반환?
+				if(xhr.status == 204){
+					getStoreList();
 				}
 			},
 			error : function(xhr, status, err){
 
 			}
 		});
-		
 	}
 	
 	$(()=>{
