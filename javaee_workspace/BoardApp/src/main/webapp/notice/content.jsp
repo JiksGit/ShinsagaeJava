@@ -1,5 +1,5 @@
-<%@page import="com.sinse.mvcapp.model.Notice"%>
-<%@page import="com.sinse.mvcapp.repository.NoticeDAO"%>
+<%@page import="mvcproject.notice.domain.Notice"%>
+<%@page import="mvcproject.notice.repository.NoticeDAO"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%! NoticeDAO noticeDAO=new NoticeDAO(); %>
 <%

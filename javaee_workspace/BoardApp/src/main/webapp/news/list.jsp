@@ -1,7 +1,7 @@
 <%@page import="com.sinse.mvcapp.util.Paging"%>
-<%@page import="com.sinse.mvcapp.model.News"%>
+<%@page import="mvcproject.notice.domain.News"%>
 <%@page import="java.util.List"%>
-<%@page import="com.sinse.mvcapp.repository.NewsDAO"%>
+<%@page import="mvcproject.notice.repository.NewsDAO"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%! 
 	NewsDAO newsDAO = new NewsDAO(); 

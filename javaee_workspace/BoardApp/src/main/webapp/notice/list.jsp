@@ -1,6 +1,6 @@
-<%@page import="com.sinse.mvcapp.model.Notice"%>
+<%@page import="mvcproject.notice.domain.Notice"%>
 <%@page import="java.util.List"%>
-<%@page import="com.sinse.mvcapp.repository.NoticeDAO"%>
+<%@page import="mvcproject.notice.repository.NoticeDAO"%>
 <%@page import="java.sql.Connection"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%!

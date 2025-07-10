@@ -166,7 +166,7 @@
       
       
       
-      <Context docBase="hiberasync" path="/hiberasync" reloadable="true" source="org.eclipse.jst.jee.server:hiberasync"/><Context docBase="mvcapp" path="/" reloadable="true" source="org.eclipse.jst.jee.server:mvcapp"/></Host>
+      <Context docBase="mvcproject" path="/" reloadable="true" source="org.eclipse.jst.jee.server:mvcproject"/></Host>
     </Engine>
   </Service>
 </Server>

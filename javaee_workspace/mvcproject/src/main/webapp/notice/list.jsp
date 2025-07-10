@@ -2,7 +2,7 @@
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%
-	List<Notice> list=(List)session.getAttribute("noticeList");
+	List<Notice> list=(List)request.getAttribute("noticeList");
 %>
 <!DOCTYPE html>
 <html>
@@ -53,7 +53,7 @@ tr:nth-child(even) {
   <% Notice notice=list.get(i);%>
   <tr>
     <td>Jill</td>
-    <td><a href="/notice/content.do?notice_id=<%=notice.getNotice_id()%>"><%=notice.getTitle() %></a></td>
+    <td><a href="/notice/detail.do?notice_id=<%=notice.getNotice_id()%>"><%=notice.getTitle() %></a></td>
     <td><%=notice.getWriter() %></td>
     <td><%=notice.getRegdate().substring(0,10)%></td>
     <td><%=notice.getHit() %></td>
