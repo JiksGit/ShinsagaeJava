@@ -15,6 +15,7 @@
 		</plugins>
 	</build>
 	<dependencies>
+<<<<<<< HEAD
 		<!-- Servlet API (Tomcat에서 제공하므로 provided) -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -43,6 +44,12 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
 			<version>4.5.13</version>
+=======
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.4</version>
+>>>>>>> 32520a53374125bb851ad46ecc0b05a92f78a88a
 		</dependency>
 	</dependencies>
 </project>
