@@ -75,7 +75,7 @@ public class UploadClient extends JFrame{
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		
 		//Post
-		HttpPost post = new HttpPost("http://192.168.60.36:8282/upload/regist");
+		HttpPost post = new HttpPost("http://192.168.45.78:8282/upload/regist");
 		
 		/* 서버로 전송할 데이터 구성하기 */
 		StringBody titleBody = new StringBody(t_title.getText(), ContentType.create("text/plain", Consts.UTF_8));
