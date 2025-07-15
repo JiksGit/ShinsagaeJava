@@ -166,7 +166,7 @@
       
       
       
-      <Context docBase="myframework" path="/" reloadable="true" source="org.eclipse.jst.jee.server:myframework"/></Host>
+      <Context docBase="mal" path="/" reloadable="true" source="org.eclipse.jst.jee.server:mal"/></Host>
     </Engine>
   </Service>
 </Server>
