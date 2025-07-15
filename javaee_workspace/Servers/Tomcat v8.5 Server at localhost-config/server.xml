@@ -163,10 +163,18 @@
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" pattern="%h %l %u %t &quot;%r&quot; %s %b" prefix="localhost_access_log" suffix=".txt"/>
 
+<<<<<<< HEAD
+      <Context docBase="imagecloud" path="/" reloadable="true" source="org.eclipse.jst.jee.server:imagecloud"/><Context docBase="notice" path="/notice" reloadable="true" source="org.eclipse.jst.jee.server:notice"/></Host>
+=======
       
       
       
+<<<<<<< HEAD
       <Context docBase="mal" path="/" reloadable="true" source="org.eclipse.jst.jee.server:mal"/></Host>
+=======
+      <Context docBase="myframework" path="/" reloadable="true" source="org.eclipse.jst.jee.server:myframework"/></Host>
+>>>>>>> 32520a53374125bb851ad46ecc0b05a92f78a88a
+>>>>>>> a02310df2ba7b6634bea53c1699b2755719c4089
     </Engine>
   </Service>
 </Server>
