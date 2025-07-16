@@ -4,18 +4,18 @@
   "https://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<typeAliases>
-		<typeAlias type="mal.domain.Notice" alias="Notice"/>
+		<typeAlias type="mal.domain.Notice" alias="Notice" />
 	</typeAliases>
-  <environments default="development">
-    <environment id="development">
-      <transactionManager type="JDBC"/>
-      <dataSource type="JNDI">
-        <property name="data_source" value="java:comp/env/jndi/mysql"/>
-      </dataSource>
-    </environment>
-  </environments>
-  <mappers>
-    <!-- <mapper resource="mal/mybatis/NoticeMapper.xml"/>
-   -->
-   </mappers>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="JNDI">
+				<property name="data_source"
+					value="java:comp/env/jndi/mysql" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="mal/mybatis/NoticeMapper.xml" />
+	</mappers>
 </configuration>

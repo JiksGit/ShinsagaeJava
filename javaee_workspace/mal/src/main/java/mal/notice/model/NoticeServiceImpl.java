@@ -5,41 +5,40 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import mal.domain.Notice;
+import mal.exception.NoticeException;
 
 @Slf4j
 @Service
+@Transactional
 public class NoticeServiceImpl implements NoticeService{
 	
-	@Qualifier("mybatisNoticeDAO") // 스프링 컨테이너가 보유한 여러 인스턴스 중 원하는 아이디를 
+//	@Qualifier("mybatisNoticeDAO") // 스프링 컨테이너가 보유한 여러 인스턴스 중 원하는 아이디를 
+	@Qualifier("hibernateNoticeDAO")
 	@Autowired
 	private NoticeDAO noticeDAO;
 
-	@Override
 	public List selectAll() {
 		log.debug("service의 selectAll() 도달");
-		noticeDAO.selectAll(); // DAO의 메서드 호출
-		return null;
+		return noticeDAO.selectAll(); // DAO의 메서드 호출
 	}
 
-	@Override
 	public Notice select(int notice_id) {
 		return null;
 	}
 
-	@Override
-	public void regist(Notice notice) {
-		
+	@Transactional
+	public void regist(Notice notice) throws NoticeException{
+		noticeDAO.insert(notice);
 	}
 
-	@Override
 	public void update(Notice notice) {
 		
 	}
 
-	@Override
 	public void delete(int notice_id) {
 		
 	}

@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<body>
-게시판 목록
+<body bgcolor="yellow">
+으아아 에러에러
 </body>
 </html>
