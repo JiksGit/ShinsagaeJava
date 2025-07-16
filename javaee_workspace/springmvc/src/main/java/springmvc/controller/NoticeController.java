@@ -33,7 +33,6 @@ public class NoticeController {
 	public String registForm() {
 		return "notice/write";
 	}
-	
 	//메서드 호출 후, 반환할 값이 없을때, 즉 저장할 것이 없을때는 
 	//ModelAndView 중 View만 반환하면 되므로, 이때는 String으로 대체해도 됨 
 	//예)  notice/detail --> String 을 넘겨받은 DispatcherServlet 이  
@@ -65,9 +64,6 @@ public class NoticeController {
 		return "redirect:/shop/notice/list";
 	}
 }
-
-
-
 
 
 
