@@ -1,4 +1,4 @@
-package mal.notice.model;
+package mal.model.notice;
 
 import java.util.List;
 
