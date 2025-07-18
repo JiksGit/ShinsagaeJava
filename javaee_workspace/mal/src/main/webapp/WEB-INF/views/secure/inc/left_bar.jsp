@@ -14,7 +14,7 @@
           <img src="/static/admin/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">민진호</a>
+          <a href="#" class="d-block">양현직 (Seller)</a>
         </div>
       </div>
 
@@ -53,7 +53,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/static/admin/index2.html" class="nav-link">
+                <a href="/admin/admin/product/registform" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>상품등록</p>
                 </a>

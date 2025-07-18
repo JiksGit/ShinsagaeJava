@@ -1,5 +1,7 @@
 package mal.spring.config;
 
+import java.util.List;
+
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -12,13 +14,18 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 
@@ -29,7 +36,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @EnableWebMvc
 @ComponentScan(basePackages = {"mal.admin.controller"})
 //@Controller, @Service, @Repository, @Component
-public class AdminWebConfig {
+public class AdminWebConfig extends WebMvcConfigurerAdapter{
 
 	/*하위 컨트롤러가 3,4단계를 수행한 후, DispatcherServlet 에게 정확한 파일명을 알려주는게 아니라
 	 * 파일의 일부 단서만 반환한다(ModelAndView에 심어서), 따라서 이 객체를 넘겨받은 DispatcherServlet
@@ -53,5 +60,28 @@ public class AdminWebConfig {
 		return resolver;
 	}
 	
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		// pom.xml에 추가한 jackson-bind 라이브러리
+		converters.add(new MappingJackson2HttpMessageConverter());
+	}
+	
+	// 파일 업로드를 위한 설정
+	// 아파치 파일 업로드를 스프링에서, 내부적으로 처리한 업로드 빈
+	// 클라이언트가 파일을 전송할 때 사용 
+	@Bean
+	public CommonsMultipartResolver multipartResolver() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setMaxUploadSize(10*1024*1024); // 10M
+		return resolver;
+	}
+	
 	
 }
+
+
+
+
+
+
+

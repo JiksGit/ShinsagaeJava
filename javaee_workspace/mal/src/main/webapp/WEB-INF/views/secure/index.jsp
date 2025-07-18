@@ -635,8 +635,11 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-
 <%@ include file="./inc/footer_link.jsp" %>
+	<!-- AdminLTE for demo purposes -->
+<script src="/static/admin/dist/js/demo.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="/static/admin/dist/js/pages/dashboard.js"></script>
 	<script>
 	  $.widget.bridge('uibutton', $.ui.button)
 	</script>
