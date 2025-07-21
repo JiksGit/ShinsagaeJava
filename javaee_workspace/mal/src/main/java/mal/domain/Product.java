@@ -16,7 +16,7 @@ public class Product {
 	private int discount;
 	private String introduce;
 	private String detail;
-	private MultipartFile photo; // ERD에 존재 하지 않는 객체?
+	// private MultipartFile[] photo; // name="photo"와 동일해야함
 	private SubCategory subCategory;
 	
 }

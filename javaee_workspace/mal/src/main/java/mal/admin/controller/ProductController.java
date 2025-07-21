@@ -32,18 +32,23 @@ public class ProductController {
 	
 	// 상품 등록 요청을 처리
 	@PostMapping("/admin/product/regist")
-	public String regist(Product product, HttpServletRequest request) {
+	public String regist(Product product, MultipartFile[] photo, HttpServletRequest request) {
+		// MultipartFile 변수와 html 이름이 동일하면 매핑됨
+		log.debug("업로드 한 파일의 수는 " + photo.length);
+		
 		// 모델 객체는 데이터베이스 테이블을 반영했기 때문에, 컨트롤러 영역에서 바로 파라미터를 받는 용도로 사용해서는 안된다. 
 		// 왜? 데이터베이스 컬럼명이 노출되기 때문에,, 
 		// 해결책은? 클라이언트의 파라미터를 받는 용도의 객체를 별도로 둔다(DTO = Data Transfer Object)
 		// DTO에서 Model 객체로 옮겨야 함.
 		
 		// log.debug("상품명" + product);
-		ServletContext context = request.getServletContext(); // jsp application 내장 객체
+		// ServletContext context = request.getServletContext(); // jsp application 내장 객체
 																// 애플리케이션과 생명을 같이
-		String realPath = context.getRealPath("/data");
-		log.debug("realPath is " + realPath);
+		// String realPath = context.getRealPath("/data");
+		// log.debug("realPath is " + realPath);
 
+		
+		
 		
 		// 4단계 : DML은 저장할 게 없다
 		return "redirect:/admin/admin/product/list";
