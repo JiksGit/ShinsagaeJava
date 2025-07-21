@@ -39,7 +39,7 @@ public class NoticeController {
 		ModelAndView mav = new ModelAndView();
 		
 		log.debug("목록 요청 받음");
-		
+	
 		// 3단계 : 일 시키기
 		List noticeList = noticeService.selectAll(); // 서비스 메서드 호출
 		
