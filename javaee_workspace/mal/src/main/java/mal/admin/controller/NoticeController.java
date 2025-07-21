@@ -11,8 +11,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.slf4j.Slf4j;
 import mal.domain.Notice;
-import mal.notice.model.NoticeDAO;
-import mal.notice.model.NoticeService;
+import mal.model.notice.NoticeDAO;
+import mal.model.notice.NoticeService;
 
 @Slf4j
 @Controller
