@@ -1,5 +1,7 @@
 package mal.domain;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +18,18 @@ public class Product {
 	private int discount;
 	private String introduce;
 	private String detail;
-	// private MultipartFile[] photo; // name="photo"와 동일해야함
-	private SubCategory subCategory;
+	
+	// 하나의 상품은 여러 색상을 보유할 수 있다 1:多 관계 (mybatis에서 collection 수집)
+	private List<ProductColor> colorList;
+	
+	// 하나의 상품은 여러 사이즈를 보유할 수 있다.
+	private List<ProductSize> sizeList;
+	
+	// 하나의 상품은 여러 이미지를 보유할 수 있다.
+	private List<ProductImg> imgList;
+	
+	private MultipartFile[] photo;
+	
+	private SubCategory subcategory;
 	
 }

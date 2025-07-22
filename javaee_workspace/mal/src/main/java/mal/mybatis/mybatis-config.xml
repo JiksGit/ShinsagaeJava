@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<typeAliases>
 		<typeAlias type="mal.domain.Notice" alias="Notice" />
@@ -10,6 +10,9 @@
 		<typeAlias type="mal.domain.Product" alias="Product" />
 		<typeAlias type="mal.domain.Color" alias="Color" />
 		<typeAlias type="mal.domain.Size" alias="Size" />
+		<typeAlias type="mal.domain.ProductColor" alias="ProductColor" />
+		<typeAlias type="mal.domain.ProductSize" alias="ProductSize" />
+		<typeAlias type="mal.domain.ProductImg" alias="ProductImg" />
 	</typeAliases>
 	<environments default="development">
 		<environment id="development">
@@ -27,5 +30,8 @@
 		<mapper resource="mal/mybatis/ProductMapper.xml" />
 		<mapper resource="mal/mybatis/ColorMapper.xml" />
 		<mapper resource="mal/mybatis/SizeMapper.xml" />
+		<mapper resource="mal/mybatis/ProductColorMapper.xml" />
+		<mapper resource="mal/mybatis/ProductSizeMapper.xml" />
+		<mapper resource="mal/mybatis/ProductImgMapper.xml" />
 	</mappers>
 </configuration>

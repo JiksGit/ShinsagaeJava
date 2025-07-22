@@ -3,7 +3,7 @@
 <mapper namespace="Color">
 	
 	<select id="selectAll" resultType="Color">
-		select * from color;
+		select * from color
 	</select>
 	
 </mapper>

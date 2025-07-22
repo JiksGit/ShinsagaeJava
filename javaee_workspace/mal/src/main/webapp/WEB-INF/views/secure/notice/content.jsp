@@ -1,4 +1,4 @@
-<%@page import="mvcproject.notice.domain.Notice"%>
+<%@ page import="mal.domain.Notice"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%
 	Notice notice = (Notice) request.getAttribute("notice");
