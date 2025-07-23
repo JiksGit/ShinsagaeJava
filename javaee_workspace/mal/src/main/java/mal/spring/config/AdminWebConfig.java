@@ -34,7 +34,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"mal.admin.controller"})
+@ComponentScan(basePackages = {"mal.admin.controller", "mal.util"})
 //@Controller, @Service, @Repository, @Component
 public class AdminWebConfig extends WebMvcConfigurerAdapter{
 
@@ -75,8 +75,6 @@ public class AdminWebConfig extends WebMvcConfigurerAdapter{
 		resolver.setMaxUploadSize(10*1024*1024); // 10M
 		return resolver;
 	}
-	
-	
 }
 
 

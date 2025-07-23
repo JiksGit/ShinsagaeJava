@@ -1,4 +1,15 @@
+<%@page import="mal.util.Paging"%>
+<%@page import="mal.domain.Size"%>
+<%@page import="mal.domain.ProductSize"%>
+<%@page import="mal.domain.ProductColor"%>
+<%@page import="mal.domain.Color"%>
+<%@page import="mal.domain.Product"%>
+<%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
+<%
+	List<Product> productList = (List) request.getAttribute("productList");
+	Paging paging = (Paging) request.getAttribute("paging");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,12 +41,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">상품 등록</h1>
+            <h1 class="m-0">상품 목록</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">상품관리>상품등록</li>
+              <li class="breadcrumb-item active">상품관리>상품목록</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -48,94 +59,106 @@
     <section class="content">
       <div class="container-fluid">
       
-            <!-- 상품 등록 폼 시작 -->
-            <div class="card card-primary">
+          <!-- 상품 목록 시작 -->
+            <div class="row">
+          <div class="col-12">
+            <div class="card">
               <div class="card-header">
-                <h3 class="card-title">상품 등록 폼</h3>
+                <h3 class="card-title">Responsive Hover Table</h3>
+
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
               <!-- /.card-header -->
-              <!-- form start -->
-              <form id="form1">
-                <div class="card-body">
-                	<!-- 카테고리 영역 시작 -->
-	                  <div class="row">
-	                    <div class="col-sm-6">
-	                      <!-- Select multiple-->
-	                      <div class="form-group">
-	                        <label>상위 카테고리</label>
-	                        <select class="form-control" id="topcategory"></select>
-	                      </div>
-	                    </div>
-	                    <div class="col-sm-6">
-	                      <div class="form-group">
-	                        <label>하위 카테고리</label>
-	                        <select class="form-control" name="subcategory.subcategory_id" id="subcategory"></select>
-	                      </div>
-	                    </div>
-	                  </div>
-                	<!-- 카테고리 영역 끝 -->
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="product_name" placeholder="상품명 입력">
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="brand" placeholder="브랜드 입력">
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="price" placeholder="가격 입력">
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="discount" placeholder="할인가 입력">
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="introduce" placeholder="간단소개 100자 이하 ">
-                  </div>
-				   <div class="form-group">
-                       <select class="form-control" name="color" id="color" multiple="multiple">
-                         <option>색상 선택</option>
-                       </select>
-	              </div>
-				  
-				  <div class="form-group">
-                       <select class="form-control" name="size" id="size" multiple="multiple">
-                         <option>사이즈 선택</option>
-                       </select>
-	              </div>
-	              
-                  <div class="form-group">
-					<!-- 편집 시작 -->
-			      	<textarea id="summernote" name="detail"></textarea>
-					<!-- 편집기 끝-->
-                  </div>
-                  
-                  <div class="form-group">
-                    <div class="input-group">
-                    
-                      <div class="custom-file">                      
-                        <input type="file" class="custom-file-input" name="photo" id="photo" multiple="multiple">
-                        <label class="custom-file-label" for="exampleInputFile">상품 이미지 선택</label>
-                      </div>
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>이미지</th>
+                      <th>카테고리</th>
+                      <th>상품명</th>
+                      <th>브랜드</th>
+                      <th>할인가</th>
+                      <th>가격</th>
+                      <th>색상</th>
+                      <th>사이즈</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  	<% 
+                  		int curPos = paging.getCurPos();
+                  		int num = paging.getNum();
+                  	%>
+                  	<% for(int i=1; i<paging.getPageSize(); i++){ %>
+                  	<% if(num < 1) break; // 1보다 작으면 데이터가 없는것임 %>
+                  	<% Product product = productList.get(curPos++); %>
+                    <tr>
+                      <td><%= num-- %></td>
+                      <td><img width="40px" src="/data/p_<%= product.getProduct_id() %>/<%= product.getImgList().get(0).getFilename() %>"></td>
+                      <td><%= product.getSubcategory().getSub_name() %></td>
+                      <td><a href="/admin/admin/product/detail?product_id=<%= product.getProduct_id()%>"><%= product.getProduct_name() %></a></td>
+                      <td><%= product.getBrand() %></td>
+                      <td><%= product.getPrice() %></td>
+                      <td><%= product.getDiscount() %></td>
+                      <td>
+                      <% List<ProductColor> colorList = product.getColorList();
+                      	StringBuffer sb= new StringBuffer();
+                      	
+                      	for(ProductColor productColor : colorList){
+                      		Color color = productColor.getColor();
+                      		sb.append(color.getColor_name());
+                      		sb.append(",");
+                      	}
+                      	out.print(sb.toString());
+                      	
+                      %>
                       
-                      <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                      </div>
-                    </div>
-                    
-                    <div id="preview" style="width:100%;">
-                    	미리보기
-                    </div>
-                    
-                  </div>
-                
-                </div>
-                <!-- /.card-body -->
-
-                <div class="card-footer">
-                  <button type="button" class="btn btn-secondary" id="bt_regist">상품등록</button>
-                  <button type="button" class="btn btn-secondary" id="bt_list">목록보기</button>
-                </div>
-              </form>
+                      </td>
+                      <td>
+                     	<% 
+                     	List<ProductSize> sizeList = product.getSizeList();
+                     	sb.delete(0, sb.length());
+                      	for(ProductSize productSize : sizeList){
+                      		Size size = productSize.getSize();
+                      		sb.append(size.getSize_name());
+                      		sb.append(",");
+                      	}
+                      	out.print(sb.toString());
+                     	%>
+                      </td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <ul class="pagination pagination-sm m-0 float-left">
+                  <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                  
+                  <% for(int i=paging.getFirstPage(); i<= paging.getLastPage(); i++){ %>
+                  <% if(i > paging.getTotalPage()) break; // 총 페이지 수를 넘으면 반복문 빠져나오기 %>
+                  <li class="page-item"><a class="page-link" href="#"><%= i %></a></li>
+                  <% } %>
+                  <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                </ul>
+              </div>
+              
             </div>
-            <!-- 상품 등록 폼 끝-->
+            <!-- /.card -->
+          </div>
+        </div>
+          <!-- 상품 목록 끝-->
         
       </div>
       <!-- /.container-fluid -->
@@ -304,7 +327,7 @@
 	   
 	   //목록버튼 이벤트 연결 
 	   $("#bt_list").click(()=>{		
-			$(location).attr("href", "/admin/admin/product/list");
+			$(location).attr("href", "/admin/admin/proudct/list");
 		});
 	});
 	</script>
