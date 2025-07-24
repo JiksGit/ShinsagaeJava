@@ -1,0 +1,27 @@
+package mal.shop.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import lombok.extern.slf4j.Slf4j;
+import mal.domain.Cart;
+
+@Controller
+@Slf4j
+public class CartController {
+
+	// 장바구니 담기
+	@PostMapping("/cart/regist")
+	public String regist(Cart cart) {
+		
+		log.debug("product_id = " + cart.getProduct().getProduct_id());
+		log.debug("eq = " + cart.getEa());
+		log.debug("member_id = " + cart.getMember_id());
+		log.debug("selectedColor = " + cart.getSelectedColor());
+		log.debug("selectedSize = " + cart.getSelectedSize());
+		
+		return null;
+	}
+	
+}

@@ -133,13 +133,16 @@ public class ProductController {
 	
 	// 상세요청에 대한 처리
 	@GetMapping("/admin/product/detail") // 매개변수는 쿼리 파라미터 name이 동일하면 자동 매핑
-	public String getDetail(int product_id, Model model) {
+	public ModelAndView getDetail(int product_id) {
+		ModelAndView mav = new ModelAndView("shop/detail");
 		// 3단계 : 상세 내용 가져오기
+		List topList = topCategoryService.selectAll();
 		Product product = productService.select(product_id);
 		// 4단계 : 저장하기
-		model.addAttribute("product", product);
+		mav.addObject("product", product);
+		mav.addObject("topList", topList);
 		
-		return "secure/product/detail";
+		return mav;
 	}
 }
 
