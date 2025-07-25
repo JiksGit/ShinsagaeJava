@@ -21,7 +21,6 @@ public class MybatisProductDAO implements ProductDAO{
 		if(result < 1) {
 			throw new ProductException("등록 실패");
 		}
-		
 	}
 
 	@Override

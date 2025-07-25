@@ -13,6 +13,8 @@
 		<typeAlias type="mal.domain.ProductColor" alias="ProductColor" />
 		<typeAlias type="mal.domain.ProductSize" alias="ProductSize" />
 		<typeAlias type="mal.domain.ProductImg" alias="ProductImg" />
+		<typeAlias type="mal.domain.SnsProvider" alias="SnsProvider" />
+		<typeAlias type="mal.domain.Member" alias="Member" />
 	</typeAliases>
 	<environments default="development">
 		<environment id="development">
@@ -33,5 +35,7 @@
 		<mapper resource="mal/mybatis/ProductColorMapper.xml" />
 		<mapper resource="mal/mybatis/ProductSizeMapper.xml" />
 		<mapper resource="mal/mybatis/ProductImgMapper.xml" />
+		<mapper resource="mal/mybatis/MemberMapper.xml" />
+		<mapper resource="mal/mybatis/SnsProviderMapper.xml" />
 	</mappers>
 </configuration>

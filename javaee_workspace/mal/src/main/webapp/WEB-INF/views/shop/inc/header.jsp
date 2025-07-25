@@ -1,3 +1,4 @@
+<%@page import="mal.domain.Member"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
     <header class="header">
         <div class="container-fluid">
@@ -31,8 +32,16 @@
                 <div class="col-lg-3">
                     <div class="header__right">
                         <div class="header__right__auth">
-                            <a href="#">Login</a>
+                        	<%
+                        		Member loginMember = (Member) session.getAttribute("member"); 
+                        	%>
+                        
+                        	<% if(loginMember == null){ %>
+                            <a href="/shop/member/loginform">Login</a>
                             <a href="#">Register</a>
+                            <% } else { %>
+                            <a href="#"><%= loginMember.getName() %>님</a>
+                            <% } %>
                         </div>
                         <ul class="header__right__widget">
                             <li><span class="icon_search search-switch"></span></li>
