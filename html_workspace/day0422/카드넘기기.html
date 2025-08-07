@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      a {
+        background-color: yellowgreen;
+        /* 인라인 속성은 유지하여, 다른 태그 요소와 공존이 가능하면서
+        너비, 높이 마진..*/
+        display: inline-block;
+        width: 150px;
+        height: 70px;
+        border-radius: 10px;
+        line-height: 70px;
+        text-align: center;
+        text-decoration: none;
+        color: yellow;
+      }
+      a:hover {
+        background-color: orange;
+        color: red;
+      }
+    </style>
+    <script>
+      let count = 1;
+      function nextCard() {
+        count++;
+        let card = document.getElementById("card");
+        card.src = "../../../images/card/h" + count + ".jpg";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="aside">
+        <!-- 자바 스크립트 코드를 작성할수있는 영역
+        1) <script> 
+        2) onClick 이벤트 헨들러 
+        3) a 태그에 javascript: 접두어 -->
+        <a href="javascript:nextCard()">다음 카드</a>
+      </div>
+      <div id="section">
+        <img id="card" src="../../../images/card/h1.jpg" alt="" />
+      </div>
+    </div>
+  </body>
+</html>

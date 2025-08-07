@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style></style>
+    <script>
+      let x;
+      let img;
+
+      function ChooseFoot() {
+        switch (foot) {
+          case "사과":
+            x = "apple";
+            break;
+          case "바나나":
+            x = "banana";
+            break;
+          case "망고":
+            x = "mango";
+            break;
+          case "멜론":
+            x = "melon";
+            break;
+          case "딸기":
+            x = "rasberry";
+            break;
+          default:
+            document.write("그런 과일은 없습니다");
+            break;
+        }
+        printFoot();
+      }
+      function printFoot() {
+        let foot = prompt("과일명을 입력하세요");
+        img = document.getElementById("pic");
+        img.src = "../../../images/fruit/" + x + ".png";
+      }
+    </script>
+  </head>
+  <body onload="ChooseFoot()">
+    <img id="pic" alt="" />
+  </body>
+</html>

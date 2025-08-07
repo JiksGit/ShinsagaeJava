@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #hour,
+      #min,
+      #sec {
+        font-size: 60px;
+        color: red;
+        background-color: azure;
+        width: 120px;
+        height: 120px;
+        border: 2px solid gray;
+        border-radius: 3px;
+        display: inline-block;
+        text-align: center;
+      }
+    </style>
+    <script src="../lib/common.js"></script>
+    <script>
+      // 표현식에 의한 함수정의(함수를 데이터처럼 변수로 받을 수 있다) = 일급시민 취급
+      let showTime = function () {
+        let d = new Date();
+        let h = zeroString(d.getHours());
+        document.getElementById("hour").innerText = h;
+        let m = zeroString(d.getMinutes());
+        document.getElementById("min").innerText = m;
+        let s = zeroString(d.getSeconds());
+        document.getElementById("sec").innerText = s;
+      };
+
+      addEventListener("load", () => {
+        setInterval(showTime, 10);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="hour"></div>
+    <div id="min"></div>
+    <div id="sec"></div>
+  </body>
+</html>

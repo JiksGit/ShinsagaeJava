@@ -1,0 +1,22 @@
+#if문을 대체하기 위해 java.util.Map 형식을 갖는 데이터 정의
+ 
+ #[컨트롤러 매핑]
+/blood.do=mvcproject.blood.controller.BloodController
+/color.do=mvcproject.color.controller.ColorController
+
+[뷰매핑]
+/blood/view.do=/blood/result.jsp
+
+#[게시판 컨트롤러 매핑]
+/notice/list.do=mvcproject.notice.controller.ListController
+/notice/regist.do=mvcproject.notice.controller.RegistController
+/notice/detail.do=mvcproject.notice.controller.DetailController
+/notice/edit.do=mvcproject.notice.controller.EditController
+/notice/del.do=mvcproject.notice.controller.DeleteController
+
+#[게시판 View 매핑]
+/notice/list/view = /notice/list.jsp
+/notice/detail/view = /notice/content.jsp
+/notice/regist/view = /notice/list.do
+/notice/delete/view = /notice/list.do
+/notice/edit/view = /notice/content.jsp

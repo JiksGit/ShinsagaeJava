@@ -1,0 +1,17 @@
+td {
+  font-size: 9px;
+  color: chocolate;
+}
+input {
+  border-color: white;
+  background-color: beige;
+}
+select {
+  border-color: white;
+  background-color: bisque;
+}
+button {
+  background-color: khaki;
+  border-color: sandybrown;
+  border-radius: 8px;
+}

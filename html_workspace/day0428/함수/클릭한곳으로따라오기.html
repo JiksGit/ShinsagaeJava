@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #wrapper {
+        width: 100%;
+        height: 600px;
+        background-color: yellow;
+        position: relative;
+      }
+    </style>
+    <script>
+      let img;
+      let a = 0.1;
+      let targetX = 650; // 이미지가 도달할 x축 위치
+      let targetY = 600;
+      function createPic() {
+        img = document.createElement("img");
+        img.src = "../../../images/PoketBall.png";
+        img.style.width = "30px";
+        img.style.height = "30px";
+        img.style.left = 200 + "px";
+        img.style.top = 150 + "px";
+        img.style.position = "absolute";
+        document.getElementById("wrapper").appendChild(img);
+      }
+      // 그냥 단번에 건너뛰기가 아니라, 목표 지점에 야금야금 다가가는
+      // 감속도 운동으로 다가가자!
+      function move() {
+        // 나의 위치 = 현재 위치 + 비율 계수 * (목표 지점 - 현재 지점);
+        img.style.left =
+          parseFloat(img.style.left) +
+          a * (targetX - parseFloat(img.style.left)) +
+          "px";
+        img.style.top =
+          parseFloat(img.style.top) +
+          a * (targetY - parseFloat(img.style.top)) +
+          "px";
+      }
+      function gameLoop() {
+        move();
+      }
+
+      addEventListener("load", function () {
+        createPic();
+        // 마우스 이벤트 연결하기
+        document
+          .getElementById("wrapper")
+          .addEventListener("mousemove", function () {
+            //mousedown, mousemove
+            targetX = event.clientX;
+            targetY = event.clientY;
+          });
+        setInterval("gameLoop()", 10);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="wrapper"></div>
+  </body>
+</html>

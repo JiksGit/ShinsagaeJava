@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #box {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: red;
+        position: absolute;
+        left: 0px;
+        top: 150px;
+      }
+    </style>
+    <script>
+      let box;
+      let b_left = 0;
+      let flag = true;
+      // 문서내의 빨간 원의 css 중 position left값을 증가시킨다
+      function move() {
+        box = document.getElementById("box");
+        box.style.left = 0 + "px"; // parseInt()를 쓰기위한 초기값 설정
+        if (flag) {
+          b_left += 10;
+        } else {
+          b_left -= 10;
+        }
+        if (b_left == 300 || b_left == 0) flag = !flag;
+        // console.log(b_left);
+        box.style.left = parseInt(box.style.left) + b_left + "px";
+      }
+
+      function autoMove() {
+        box = document.getElementById("box");
+        box.style.left = 0 + "px"; // parseInt()를 쓰기위한 초기값 설정
+        if (flag) {
+          b_left += 10;
+        } else {
+          b_left -= 10;
+        }
+        if (b_left == 300 || b_left == 0) flag = !flag;
+        // console.log(b_left);
+        box.style.left = parseInt(box.style.left) + b_left + "px";
+        setTimeout(`autoMove()`, 10);
+      }
+
+      addEventListener("load", function () {
+        let m = document.getElementById("manual");
+        let a = document.getElementById("auto");
+
+        m.addEventListener("click", function () {
+          move();
+        });
+        a.addEventListener("click", function () {
+          autoMove();
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <input type="button" value="수동" id="manual" />
+    <input type="button" value="자동" id="auto" />
+
+    <div id="box"></div>
+  </body>
+</html>

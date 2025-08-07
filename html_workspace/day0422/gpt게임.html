@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shooting Game Fixed</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      #wrapper {
+        width: 900px;
+        height: 600px;
+        margin: auto;
+        font-family: sans-serif;
+      }
+      #aside {
+        width: 200px;
+        height: 600px;
+        background-color: darkkhaki;
+        float: left;
+      }
+      #section {
+        width: 700px;
+        height: 600px;
+        background-color: gainsboro;
+        float: left;
+        position: relative;
+        overflow: hidden;
+        background-image: url(../../images/shooting/bg.jpg);
+      }
+      button {
+        width: 60px;
+        height: 45px;
+        background-color: aquamarine;
+        border-radius: 5px;
+      }
+      #hero {
+        position: absolute;
+        left: 200px;
+        top: 200px;
+        width: 100px;
+        height: 90px;
+      }
+      .bullet {
+        width: 10px;
+        height: 10px;
+        background: red;
+        position: absolute;
+        border-radius: 50%;
+      }
+      .enemy {
+        width: 50px;
+        height: 50px;
+        background: blue;
+        position: absolute;
+        border-radius: 10px;
+      }
+      #score {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 20px;
+        color: black;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 5px 10px;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="aside">
+        <table style="margin-top: 30px">
+          <tr>
+            <td></td>
+            <td><button onclick="setUp()">↑</button></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><button onclick="setLeft()">←</button></td>
+            <td><button onclick="setDown()">↓</button></td>
+            <td><button onclick="setRight()">→</button></td>
+          </tr>
+          <tr>
+            <td colspan="3" style="text-align: center">
+              <p>스페이스: 발사</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="section">
+        <div id="score">점수: 0</div>
+        <img id="hero" src="../../../images/shooting/plane.png" alt="비행기" />
+      </div>
+    </div>
+
+    <script>
+      let pic_top = 200;
+      let pic_left = 200;
+      let score = 0;
+
+      const hero = document.getElementById("hero");
+      const section = document.getElementById("section");
+      const scoreBox = document.getElementById("score");
+
+      function updateHeroPosition() {
+        hero.style.top = pic_top + "px";
+        hero.style.left = pic_left + "px";
+      }
+
+      function setUp() {
+        pic_top -= 5;
+        if (pic_top < 0) pic_top = 0;
+        updateHeroPosition();
+      }
+      function setDown() {
+        pic_top += 5;
+        if (pic_top > 510) pic_top = 510;
+        updateHeroPosition();
+      }
+      function setLeft() {
+        pic_left -= 5;
+        if (pic_left < 0) pic_left = 0;
+        updateHeroPosition();
+      }
+      function setRight() {
+        pic_left += 5;
+        if (pic_left > 600) pic_left = 600;
+        updateHeroPosition();
+      }
+
+      // 총알 발사
+      function shoot() {
+        const bullet = document.createElement("div");
+        bullet.className = "bullet";
+        bullet.style.left = pic_left + 45 + "px";
+        bullet.style.top = pic_top + 20 + "px";
+        section.appendChild(bullet);
+
+        let bulletInterval = setInterval(() => {
+          let top = parseInt(bullet.style.top);
+          bullet.style.top = top - 10 + "px";
+
+          if (top < 0) {
+            clearInterval(bulletInterval);
+            bullet.remove();
+          }
+
+          // 충돌 체크 (위치 기준 보정)
+          const enemies = document.querySelectorAll(".enemy");
+          enemies.forEach((enemy) => {
+            if (isColliding(bullet, enemy)) {
+              clearInterval(bulletInterval);
+              bullet.remove();
+              enemy.remove();
+              score += 10;
+              scoreBox.textContent = `점수: ${score}`;
+            }
+          });
+        }, 30);
+      }
+
+      // 적 생성
+      setInterval(() => {
+        const enemy = document.createElement("div");
+        enemy.className = "enemy";
+        enemy.style.left = Math.floor(Math.random() * 650) + "px";
+        enemy.style.top = "0px";
+        section.appendChild(enemy);
+
+        let enemyInterval = setInterval(() => {
+          let top = parseInt(enemy.style.top);
+          enemy.style.top = top + 3 + "px";
+
+          if (top > 600) {
+            clearInterval(enemyInterval);
+            enemy.remove();
+          }
+        }, 40);
+      }, 2000);
+
+      function isColliding(bullet, enemy) {
+        const bTop = bullet.offsetTop;
+        const bLeft = bullet.offsetLeft;
+        const bRight = bLeft + bullet.offsetWidth;
+        const bBottom = bTop + bullet.offsetHeight;
+
+        const eTop = enemy.offsetTop;
+        const eLeft = enemy.offsetLeft;
+        const eRight = eLeft + enemy.offsetWidth;
+        const eBottom = eTop + enemy.offsetHeight;
+
+        return !(
+          bBottom < eTop ||
+          bTop > eBottom ||
+          bRight < eLeft ||
+          bLeft > eRight
+        );
+      }
+
+      // 키보드 지속 이동
+      const keysPressed = {};
+      const moveSpeed = 20;
+
+      document.addEventListener("keydown", (e) => {
+        if (e.repeat) return; // 자동 반복 방지
+        keysPressed[e.key] = true;
+
+        if (e.key === " ") shoot();
+
+        if (!moveInterval) {
+          moveInterval = setInterval(() => {
+            if (keysPressed["ArrowUp"]) setUp();
+            if (keysPressed["ArrowDown"]) setDown();
+            if (keysPressed["ArrowLeft"]) setLeft();
+            if (keysPressed["ArrowRight"]) setRight();
+          }, moveSpeed);
+        }
+      });
+
+      document.addEventListener("keyup", (e) => {
+        delete keysPressed[e.key];
+        if (Object.keys(keysPressed).length === 0) {
+          clearInterval(moveInterval);
+          moveInterval = null;
+        }
+      });
+
+      let moveInterval = null;
+    </script>
+  </body>
+</html>

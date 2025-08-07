@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <script>
+    function setTable() {
+      document.write("<table style='background-color:red;'>");
+      for (let i = 1; i <= 3; i++) {
+        document.write("<tr>");
+        for (let j = 1; j <= 5; j++) {
+          document.write(
+            "<td style='width:200px;height:250px;border:1px;background-color:blue'></td>"
+          );
+        }
+        document.write("</tr>");
+      }
+      document.write("</table>");
+    }
+  </script>
+  <body onload="setTable()"></body>
+</html>

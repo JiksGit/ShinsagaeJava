@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="mal.domain.Notice" alias="Notice" />
+		<typeAlias type="mal.domain.TopCategory" alias="TopCategory" />
+		<typeAlias type="mal.domain.SubCategory" alias="SubCategory" />
+		<typeAlias type="mal.domain.Product" alias="Product" />
+		<typeAlias type="mal.domain.Color" alias="Color" />
+		<typeAlias type="mal.domain.Size" alias="Size" />
+		<typeAlias type="mal.domain.ProductColor" alias="ProductColor" />
+		<typeAlias type="mal.domain.ProductSize" alias="ProductSize" />
+		<typeAlias type="mal.domain.ProductImg" alias="ProductImg" />
+		<typeAlias type="mal.domain.SnsProvider" alias="SnsProvider" />
+		<typeAlias type="mal.domain.Member" alias="Member" />
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="JNDI">
+				<property name="data_source"
+					value="java:comp/env/jndi/mysql" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="mal/mybatis/NoticeMapper.xml" />
+		<mapper resource="mal/mybatis/TopCategoryMapper.xml" />
+		<mapper resource="mal/mybatis/SubCategoryMapper.xml" />
+		<mapper resource="mal/mybatis/ProductMapper.xml" />
+		<mapper resource="mal/mybatis/ColorMapper.xml" />
+		<mapper resource="mal/mybatis/SizeMapper.xml" />
+		<mapper resource="mal/mybatis/ProductColorMapper.xml" />
+		<mapper resource="mal/mybatis/ProductSizeMapper.xml" />
+		<mapper resource="mal/mybatis/ProductImgMapper.xml" />
+		<mapper resource="mal/mybatis/MemberMapper.xml" />
+		<mapper resource="mal/mybatis/SnsProviderMapper.xml" />
+	</mappers>
+</configuration>

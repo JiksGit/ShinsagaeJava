@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 600px;
+        height: 600px;
+        margin: auto;
+        background-color: rgb(40, 89, 224);
+        position: relative;
+      }
+    </style>
+    <script src="./js/Ball.js"></script>
+    <script>
+      let ballArray = [];
+      let colorArray = [
+        "red",
+        "orange",
+        "navy",
+        "blue",
+        "yellow",
+        "green",
+        "purple",
+      ];
+
+      function gameLoop() {
+        for (let i = 0; i < ballArray.length; i++) {
+          ballArray[i].move();
+        }
+      }
+
+      //Ball 거푸집(클래스)으로부터 객체(인스턴스)를 생성하자
+      function fire() {
+        let velX = parseInt(Math.random() * 40);
+        let velY = parseInt(Math.random() * 40);
+
+        // 인스턴스 생성
+        let ball = new Ball(
+          document.getElementById("wrapper"),
+          100,
+          200,
+          40,
+          40,
+          velX,
+          velY,
+          colorArray[parseInt(Math.random() * colorArray.length)],
+          true,
+          true
+        );
+        ballArray.push(ball);
+      }
+
+      addEventListener("load", function () {
+        // 키보드 이벤트 구현
+
+        //사용자가 이벤트를 일으키며, 해당 이벤트 정보 객체인 이벤트 객체가
+        //생성되어, addEventListener 메서드의 두번째 매개변수로 전달이 됨
+        //개발자가 매겨변수를 받을지 말지는 자유...
+        addEventListener("keydown", function (e) {
+          if (e.keyCode == 32) {
+            fire();
+          }
+        });
+
+        setInterval(gameLoop, 10);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="wrapper"></div>
+  </body>
+</html>

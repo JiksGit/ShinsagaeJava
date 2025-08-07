@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style></style>
+    <script src="./js/Rect.js"></script>
+    <script>
+      let width = 40; //막대 하나당 너비
+      let height = 300; //막대 하나당 높이
+      let count = 20; //생성하고픈 막대 수
+
+      let rectArray = [];
+      let colorArray = [
+        "red",
+        "orange",
+        "navy",
+        "blue",
+        "yellow",
+        "green",
+        "purple",
+        "gray",
+        "pink",
+        "lightgreen",
+        "lightgray",
+      ];
+
+      let test = () => {
+        // 화살표 함수 내의 this는 상위 스코프 객체를 가리킴
+        console.log("나 호출했어?", this);
+      };
+
+      //원하는 수만큼의 막대를 만들어서, 부모에 부착하되,
+      //부모의 크기는 결정된 것이 아니라, 자식의 크기와 수에
+      //비례하여 결정하자(동적으로 부여하자)
+      //JavaScript 언어는 함수를 일급시민(first-class citizen) 취급
+      //컴퓨터 공학에서는 일급시민이란 어떤 대상을 일반 데이터처럼 취급할 수 있는
+      //것을 말함. 즉 자바스크립트는 함수를 변수에 담거나, 함수를 매개변수 전달하거나
+      //함수를 리턴도 할 수 있음.
+      function init() {
+        let wrapper = document.createElement("div");
+        wrapper.style.width = width * count + "px";
+        wrapper.style.height = 600 + "px";
+        wrapper.style.margin = "auto";
+        wrapper.style.background = "lightyellow";
+        wrapper.style.position = "relative";
+        document.body.appendChild(wrapper);
+        for (let i = 0; i < 20; i++) {
+          let rect = new Rect(
+            wrapper,
+            i * width,
+            parseInt(Math.random() * 200),
+            width,
+            height,
+            colorArray[parseInt(Math.random() * colorArray.length)]
+          );
+          rectArray.push(rect);
+        }
+      }
+      addEventListener("load", function () {
+        init();
+      });
+    </script>
+  </head>
+  <body></body>
+</html>

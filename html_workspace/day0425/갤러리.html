@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #wrapper {
+        width: 700px;
+        height: 550px;
+      }
+      #aside {
+        width: 120px;
+        height: 100%;
+        float: left;
+        overflow: scroll;
+        text-align: center;
+        background-color: blue;
+      }
+      #content {
+        width: 580px;
+        height: 100%;
+        float: left;
+        background-color: red;
+      }
+      #aisde img {
+        width: 100%;
+        margin-top: 5px;
+      }
+      #content img {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script>
+      // 태그로 이미지를 일일이 작성하지 말고(= 정적코드 작성), 프로그래밍 실행시
+      // 동적으로 이미지를 생성하여 aside에 자식요소로 부착하자
+      function createThumb(n) {
+        let img = document.createElement("img");
+        img.src = `../../../images/geographic/animal${n}.jpg`;
+        //이미지에 클릭 이벤트 연결 (프로그래밍 적 이벤트 연결)
+        img.addEventListener("click", function () {
+          //우측의 content 영역에, 지금 누른 썸네일 이미지의 큰 버전이 나오게 하자
+          console.log("지금 당신이 누른 이미지의 경로는 ", this.src);
+          document.querySelector("#content img").src = this.src;
+        });
+        img.style.height = "15%";
+        let aside = document.getElementById("aside");
+        aside.appendChild(img);
+      }
+      /* 이벤트 헨들러 구현을 태그에 직접 작성하는 방법도 있지만, js의 프로그래밍적
+        방법으로 이벤트를 연결하는 방법도 있다
+        addEventListener() 메서드에 두번째 매개변수값으로는 함수가 올 수 있는데
+        이 함수는 딱 그이벤트 발생시만 호출되는 용동이므로
+        즉 재사용성이 없을 경우, 이름없는 익명함수로 처리한다.
+        */
+      addEventListener("load", function () {
+        for (let i = 1; i <= 9; i++) {
+          createThumb(i); // 썸네일 생성하기
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <button id="btn" onClick="this.innerText='오늘은금요일'">나 눌러봐</button>
+    <div id="wrapper">
+      <div id="aside"></div>
+      <div id="content"><img /></div>
+    </div>
+  </body>
+</html>
