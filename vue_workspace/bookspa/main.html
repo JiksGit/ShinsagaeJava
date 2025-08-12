@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    </head>
+<style>
+    #app{
+        width : 1400px;
+        height : 800px;
+        background-color: rgb(181, 188, 255);
+    }
+    #content_header {
+        width : 100%;
+        height : 50px;
+        background-color: rgba(255, 228, 196, 0.527);
+        text-align: center;
+    }
+    #content_body {
+        width: 100%;
+        height: 750px;
+        background-color: bisque;
+    }
+    input {
+        width: 30%;
+        height: 30px;
+    }
+    button {
+        width: 60px;
+        height: 30px;
+        margin-top: 7px;
+        margin-left : 5px;
+    }
+    table {
+        width: 100%;
+    }
+</style>
+<body>
+    <div id="app">
+        <div id="content_header">
+            <input type="text" placeholder="상호명 검색">
+            <button type="button">검색</button>
+        </div>
+        <div id="content_body">
+            <table>
+                <tr>
+                    <th>소장도서관(이름)</th>
+                    <th>소장도서관(코드)</th>
+                    <th>ISBN</th>
+                    <th>표제</th>
+                    <th>저작자</th>
+                    <th>발행자</th>
+                    <th>발행년도</th>
+                </tr>
+                <tr v-for = "book in bookList">
+                    <td>{{book.libName}}</td>
+                    <td>{{book.manageCode}}</td>
+                    <td>{{book.isbn}}</td>
+                    <td>{{book.title}}</td>
+                    <td>{{book.author}}</td>
+                    <td>{{book.publisher}}</td>
+                    <td>{{book.pubYear}}</td>
+                </tr>
+            </table>    
+        </div>
+    </div>
+
+    <script>
+        const {createApp, reactive, ref} = Vue;
+        
+        // Vue3부터는 setup() 메서드 안에 필요한 변수 및 메서드를 한꺼번에 등록한다
+        // 단, 등록된 변수 및 메서드는 Vue에게 반환(return)
+        createApp({
+            setup(){
+                let msg = ref(0); // 바인딩 데이터 선언
+                const bookList = reactive([]); // 바인딩 배열 선언
+                const manageCd = "";
+
+                // 음식 목록 요청 메서드 정의
+                const getList=(title)=>{
+                    title = (title == undefined) ? "" : title;
+                    $.ajax({
+                        url: "http://localhost:8083/book/books?title=" + title+"&manageCd=" +manageCd,
+                        method: "GET",
+                        dataType: "json", // ← 응답을 자동으로 JS 객체/배열로 변환
+                        success: result => {
+                            // console.log("서버로부터 받은 음식점 목록은:", result);
+                            console.log("서버로부터 받은 음식점 바디는:", result.body);
+                            bookList.splice(0); // removeAll()
+                            result.body.forEach((item)=>{
+                                bookList.push(item);
+                            });
+                        }
+                    });
+                }
+
+                getList();
+
+                return {msg, bookList, getList};
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
