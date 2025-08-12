@@ -1,0 +1,31 @@
+###게시물 목록
+GET http://localhost:9999/shop/boards
+Content-Type:application/json
+
+###게시물 등록
+POST http://localhost:9999/shop/boards
+Content-Type:application/json
+
+{
+    "title":"게시판 등록 테스트",
+    "writer":"zino",
+    "content":"내용없음"
+}
+
+###게시물 1건 조회
+GET http://localhost:9999/shop/boards/1
+Content-Type:application/json
+
+###게시물 수정
+PUT http://localhost:9999/shop/boards/1
+Content-Type:application/json
+
+{
+    "title":"게시판 수정 테스트",
+    "writer":"batman",
+    "content":"과연 수정될까요?"
+}
+
+###게시물 삭제 
+DELETE http://localhost:9999/shop/boards/2
+Content-Type:application/json
