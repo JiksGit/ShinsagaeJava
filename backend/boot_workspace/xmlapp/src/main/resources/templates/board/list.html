@@ -17,15 +17,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr th:each="board : ${boardList}">
                 <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
+                <td th:text="${board.title}">1</td>
+                <td th:text="${board.writer}">1</td>
+                <td th:text="${board.content}">1</td>
+                <td th:text="${board.regdate}">1</td>
+                <td th:text="${board.hit}">1</td>
             </tr>
         </tbody>
     </table>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
