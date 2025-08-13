@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    </head>
+<style>
+    #app{
+        width : 1400px;
+        height : 800px;
+        background-color: rgb(181, 188, 255);
+    }
+    #content_header {
+        width : 100%;
+        height : 50px;
+        background-color: rgba(255, 228, 196, 0.527);
+        text-align: center;
+    }
+    #content_body {
+        width: 100%;
+        height: 750px;
+        background-color: bisque;
+    }
+    input {
+        width: 30%;
+        height: 30px;
+    }
+    button {
+        width: 60px;
+        height: 30px;
+        margin-top: 7px;
+        margin-left : 5px;
+    }
+    table {
+        width: 100%;
+    }
+</style>
+<body>
+    <div id="app">
+        <div id="content_header">
+            <input type="text" placeholder="입장문 검색">
+            <button type="button">검색</button>
+        </div>
+        <div id="content_body">
+            <table>
+                <tr>
+                    <th>입장수</th>
+                    <th>입장위치</th>
+                    <th>날짜</th>
+                </tr>
+                <tr v-for = "park in parkList">
+                    <td>{{park.entercount}}</td>
+                    <td>{{park.inoutdoorcode}}</td>
+                    <td>{{park.processdate}}</td>
+                </tr>
+            </table>    
+        </div>
+    </div>
+
+    <script>
+        const {createApp, reactive, ref} = Vue;
+        
+        // Vue3부터는 setup() 메서드 안에 필요한 변수 및 메서드를 한꺼번에 등록한다
+        // 단, 등록된 변수 및 메서드는 Vue에게 반환(return)
+        createApp({
+            setup(){
+                let msg = ref(0); // 바인딩 데이터 선언
+                const parkList = reactive([]); // 바인딩 배열 선언
+
+                // 음식 목록 요청 메서드 정의
+                const getList=(pdoor)=>{
+                    pdoor = (pdoor == undefined) ? "정문" : pdoor;
+                    $.ajax({
+                        url: "http://localhost:8989/parks?pdoor=" + pdoor,
+                        method: "GET",
+                        dataType: "json", // ← 응답을 자동으로 JS 객체/배열로 변환
+                        success: result => {
+                            // console.log("서버로부터 받은 음식점 목록은:", result);
+                            console.log("서버로부터 받은 음식점 바디는:", result.body);
+                            parkList.splice(0); // removeAll()
+                            result.forEach((item)=>{
+                                parkList.push(item);
+                            });
+
+                        }
+                    });
+                }
+
+                getList();
+
+                return {msg, parkList, getList};
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>

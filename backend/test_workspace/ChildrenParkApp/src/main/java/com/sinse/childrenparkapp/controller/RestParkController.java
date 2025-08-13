@@ -1,7 +1,7 @@
 package com.sinse.childrenparkapp.controller;
 
-import com.sinse.yacksuter.model.Yacksu;
-import com.sinse.yacksuter.model.YacksuService;
+import com.sinse.childrenparkapp.model.park.Park;
+import com.sinse.childrenparkapp.model.park.ParkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +21,10 @@ public class RestParkController {
 
     private String serviceKey="KKjOD9q1hOtnI9nQNJwZrixRw%2FAnZRztIV9zSPRVpRfTyvIVou7z2GxyfZYKyuQsu0Zwqr90qLHOZhblv2Dm7Q%3D%3D";
 
-    private YacksuService yacksuService;
+    private ParkService parkService;
 
-    public RestParkController(YacksuService yacksuService) {
-        this.yacksuService = yacksuService;
+    public RestParkController(ParkService parkService) {
+        this.parkService = parkService;
     }
 
     @GetMapping("/test")
@@ -32,18 +32,18 @@ public class RestParkController {
         return "my app is success";
     }
 
-    @GetMapping("/yacksuters")
-    public List<Yacksu> yacksuList(String bcode) throws Exception {
-        String baseUrl="https://apis.data.go.kr/6460000/jnYaksoo";
+    @GetMapping("/parks")
+    public List<Park> parkList(String pdoor) throws Exception {
+        String baseUrl="http://data.sisul.or.kr/AutoAPI/service/OpenDB/ChildParkEnterStat/getChildParkEnterStatQry";
 
         //if(store_name.length()<1)store_name="";
-
         //파라미터 설정
         String url=baseUrl+"?" +
                 "serviceKey="+serviceKey+
-                "&bcode="+ URLEncoder.encode(bcode, StandardCharsets.UTF_8)+
-                "&pageSize="+URLEncoder.encode("10", StandardCharsets.UTF_8)+
-                "&startPage="+URLEncoder.encode("0", StandardCharsets.UTF_8);
+                "&numOfRows="+ URLEncoder.encode("10", StandardCharsets.UTF_8)+
+                "&pageNo="+URLEncoder.encode("1", StandardCharsets.UTF_8)+
+                "&pyyyymm="+URLEncoder.encode("202201", StandardCharsets.UTF_8)+
+                "&pdoor="+URLEncoder.encode(pdoor, StandardCharsets.UTF_8);
 
         //HttpUrlConnection 보다 개선
         HttpClient client = HttpClient.newHttpClient();
@@ -58,8 +58,9 @@ public class RestParkController {
         //Open API 서버에 요청 시도
         HttpResponse<String> response =client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        log.info("API Response: {}", response.body());
-        return yacksuService.parse(response);
+        log.debug("API Response: {}", response.body());
+
+        return parkService.parse(response.body());
     }
 
     @ExceptionHandler(Exception.class)
