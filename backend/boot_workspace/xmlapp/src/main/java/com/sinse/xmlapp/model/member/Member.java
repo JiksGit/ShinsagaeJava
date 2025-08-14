@@ -10,3 +10,4 @@ public class Member {
     private String job;
     private String tel;
 }
+ 
