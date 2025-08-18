@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<style>
+    #app > *{
+        margin : 0 auto;
+        text-align: center;
+    }
+    #wrapper{
+        width: 400px;
+        height : 550px;
+    }
+    #btn{
+        height : 50px;
+    }
+    #users{
+        background-color: greenyellow;
+        height: 250px;
+        width: 100%;
+        overflow: scroll;
+    }
+    #area {
+        height : 300px;
+    }
+    textarea {
+        height : 300px;
+        width: 100%;
+    }
+    #keyinput {
+        margin-top: 10px;
+        height : 50px;
+    } 
+
+</style>
+<body>
+    <div id="app">
+        <div id="wrapper">
+            <div id="btn">
+                <button type="button" @click="connect()">접속</button>
+                <button type="button">끊기</button>
+            </div>
+            <div id="users">
+                <ul>
+                    <li v-for="id in userList" :key="id">{{id}}</li>
+                </ul>
+            </div>
+            <div id="area">
+                <textarea ref="area" v-model="log"></textarea>
+            </div>
+            <div id="keyinput">
+                <input type="text" v-model="txt" @keyup.enter="sendMessage()">
+            </div>
+        </div>    
+    </div>
+    <script>
+        const {createApp, reactive, ref} = Vue;
+
+
+        createApp({
+            setup(){
+                let ws = null;
+                let area = ref(null); // textarea를 제어하기 위한 변수
+                let log = ref("");
+                let txt = ref("");
+                let userList = reactive([]);
+
+                // 서버에 요청하기
+                const request=(msg)=>{
+                    ws.send(msg); // 서버에 데이터 전송
+                }
+                const connect=()=>{
+                    ws = new WebSocket("ws://localhost:9999/ws/multi");
+
+                    ws.onopen=()=>{
+                        log.value += "접속함 \n";
+                        
+                        let msg = {};
+                        msg["requestType"] = "connect";
+                        request(JSON.stringify(msg)); // 접속임을 알려줄 수 있는 메시지 전송
+                    }
+                    ws.onmessage=(e)=>{
+                        // console.log(userList[0].name);
+                        console.log(e.data);
+
+                        let responseJson = JSON.parse(e.data);
+
+                        // 1) 최소 접속 시 서버로부터 접속자 정보를 받는 경우라면..
+                        if(responseJson.responseType == "connect"){
+                            console.log("접속 요청에 대한 응답 받음");
+                            // log.value += e.data +"\n";
+                            
+                            // 서버에서 접속자 명단을 보내준 경우..
+                            // e.data가 json 문자열이므로, 객체로 취급되려면, JSON 객체로 전환해야한다
+                            userList.splice(0); // 기존 배열을 비운다
+                            responseJson.data.forEach(item=>{
+                                    userList.push(item);
+                            });
+                        }
+                        // 2) 채팅을 위한 메시지 전송 후, 서버로부터 다시 받게되는 메시지인 경우..
+                        else if(responseJson.responseType == "chat"){
+                            console.log("채팅의 로그 : " + responseJson.data);
+                            /*
+                                {
+                                    "requestType" : "chat",
+                                    "sender" : "sessionid",
+                                    "data" : "나 배고파"
+                                }
+                            */
+                            log.value += responseJson.sender + "의 말 : " + responseJson.data + "\n";
+                        }
+                        // 3) 방 개설을 위해 서버에 요청 후, 그 결과를 받는 경우
+
+                        // 4) 방 폐쇄
+                    }
+                }
+                
+                // 채팅 메시지 보내기
+                const sendMessage=()=>{
+                    // ws.send(txt.value);
+                    // 서버는 클라이언트가 무엇을 원하는지 알아야 하므로, 클라이언트와 서버는 서로
+                    // 원하는게 무엇인지를 표현해놓은 형식을 만들어놓고 그 형식대로 메시지를 주고받아야함
+                    // 통신 분야에서는 이 정해진 약속을 프로토콜이라 한다.
+                    /* 
+                    [접속시 구성할 요청 정보]
+                    {
+                        "requestType" : "connect",
+                        "userId" : "2wlrlwkd"
+                    }
+                    [응답시 구성할 요청 정보]
+                    {
+                        "responseType" : "connectSuccess",
+                        "data" : [
+                            {
+                                "userId" : "scott"
+                            }, 
+                            {
+                                "userId" : "admams"
+                            }
+                        ]
+                    }
+                    */
+                    let msg = {};
+                    msg["requestType"] = "chat";
+                    msg["data"] = txt.value;
+                    /*
+                        {
+                            "requestType" : "chat",
+                            "data" : "나 배고파"
+                        }
+                    */
+
+                    request(JSON.stringify(msg));
+                    txt.value="";
+                }
+                return {area, log, txt, userList, connect, sendMessage}
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
