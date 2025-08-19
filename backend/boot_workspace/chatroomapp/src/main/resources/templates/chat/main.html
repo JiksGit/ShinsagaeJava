@@ -2,102 +2,176 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>채팅방</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
+        /* 레이아웃 */
         #wrapper{
-            width:2000px;
+            width:1200px;
             height:800px;
-            background-color:yellow;
+            margin: 0 auto;
             overflow: hidden;
+            font-family: "Segoe UI", Arial, sans-serif;
         }
         #aside{
             width: 200px;
             height: 800px;
-            background: darkolivegreen;
+            background: #2F4F4F; /* 다크 슬레이트 그린 */
+            color: #f9f9f9;
             float: left;
+            padding: 15px;
+            box-sizing: border-box;
         }
+        #aside h4 { margin: 5px 0; }
+        #aside input, #aside button {
+            margin: 5px 0;
+            width: 100%;
+            padding: 6px;
+            border-radius: 6px;
+            border: none;
+        }
+        #aside button {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #aside button:hover {
+            background: #45a049;
+        }
+
         #content{
             width: 1000px;
             height: 800px;
-            background-color: darkgreen;
+            background-color: #eaf4ea; /* 은은한 라이트그린 */
             float: left;
-        }
-        .room{
-            width:186px;
-            height:250px;
-            background: yellow;
-            border-radius: 2px;
-            border:5px solid darkcyan;
-            display: inline-block;
-            margin:1px;
-        }
-        .room-header{
-            width:100%;
-            height:25px;
-            background-color: #55d140;
-        }
-        .room-body{
-            width:100%;
-            height:225px;
-            background: #04AA6D;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
-        /*
-            팝업
-         */
+        /* 채팅방 카드 */
+        .room{
+            width:180px;
+            height:250px;
+            background: #ffffff;
+            border-radius: 8px;
+            display: inline-block;
+            margin:6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .room:hover {
+            transform: translateY(-3px);
+            cursor: pointer;
+        }
+        .room-header{
+            height:30px;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            padding-left: 5px;
+            line-height: 30px;
+            border-radius: 6px 6px 0 0;
+        }
+        .room-body{
+            height:220px;
+            background: #f0fff4;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        /* 팝업 */
         #pop {
-            width: 800px;
-            height: 800px;
-            float:left;
+            width: 650px;
+            height: 550px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            background-color: #fff;
+            z-index: 9999;
+            overflow: hidden;
+            flex-direction: column;
         }
         #content2 {
-            width: 620px;
-            height: 700px;
-            float : left;
+            width: 500px;
+            height: 450px;
+            float: left;
         }
         #content-header{
             height: 50px;
-            background-color: #FBF3D5;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
         }
         #content-body{
-            height: 650px;
-            background-color: #D6A99D;
+            height: 400px;
+            background-color: #fafafa;
         }
+
         #aside2 {
-            width: 180px;
-            height: 700px;
-            float : left;
+            width: 150px;
+            height: 450px;
+            float: left;
+            background: #f5f5f5;
         }
         #aside-header{
             height: 50px;
-            background-color: #D6DAC8;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
         #aside-body{
-            height: 600px;
-            background-color: #9CAFAA;
+            height: 350px;
+            padding: 5px;
+            overflow-y: auto;
         }
         #aside-footer{
             height: 50px;
-            background-color: #7c7c79;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #aside-footer > button {
             width: 100px;
-            height: 40px;
+            height: 35px;
+            border: none;
+            border-radius: 6px;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
+        #aside-footer > button:hover {
+            background-color: #45a049;
+        }
+
         #footer{
             width: 100%;
             height: 100px;
-            background-color: #FBF3D5;
+            background-color: #f1f1f1;
             clear: both;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #footer > textarea{
-            width: 80%;
+            width: 90%;
             height: 80%;
-            margin : 5px 0 0 90px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: none;
         }
-
     </style>
 </head>
 <body>
@@ -117,33 +191,35 @@
                 <li v-for="member in memberList">{{member.name}}</li>
             </ul>
         </div>
+
         <div id="content">
-            <div class="room" v-for="room in roomList">
+            <div class="room" v-for="room in roomList" @click="openPop()">
                 <div class="room-header">{{room.roomName}}</div>
                 <div class="room-body">{{room.master}}</div>
+                <input type="hidden" name="roomId" :value="room.uuid">
             </div>
         </div>
 
-        <!-- 팝업 시작 -->
-        <div id="pop">
+        <!-- 팝업 -->
+        <div id="pop" v-show="showPop">
             <div id="content2">
-                <div id="content-header"></div>
+                <div id="content-header">채팅방</div>
                 <div id="content-body"></div>
             </div>
             <div id="aside2">
-                <div id="aside-header"></div>
+                <div id="aside-header">방장이름</div>
                 <div id="aside-body"></div>
                 <div id="aside-footer">
-                    <button>나가기</button>
+                    <button @click="closePop()">나가기</button>
                 </div>
             </div>
             <div id="footer">
-                <textarea></textarea>
+                <textarea placeholder="메시지를 입력하세요..."></textarea>
             </div>
         </div>
-        <!-- 팝업 종료 -->
     </div>
 </div>
+
 <script>
     const {createApp, reactive, ref} = Vue;
 
@@ -151,71 +227,59 @@
         setup(){
             let roomList=reactive([]);
             let memberList=reactive([]);
+            let userList=reactive([]);
             let ws = null;
+            let showPop = ref(false);
 
             const connect=()=>{
                 ws = new WebSocket("ws://localhost:8989/chat/multi");
-
-                // 접속이 성공되면..
-                ws.onopen = (event) =>{
-
-                }
-
-                // 메시지가 수신되면..
+                ws.onopen = ()=>{};
                 ws.onmessage=(e)=>{
-                    console.log("접속과 동시에 수신받은 데이터는 : " + e.data);
-
-                    // JSON 파싱하는 이유? 데이터를 객체 취급하여 ,찍고 접근하기 위함..
                     const responseJson = JSON.parse(e.data);
-
                     if(responseJson.responseType == "createRoom"){
                         memberList.splice(0);
                         roomList.splice(0);
-
-                        // 접속자 명단
-                        responseJson.memberList.forEach(member=>{
-                            memberList.push(member);
-                        });
-
-                        // 채팅방 목록
+                        responseJson.memberList.forEach(member=> memberList.push(member));
                         if(responseJson.roomList != null){
-                            responseJson.roomList.forEach(room => {
-                                roomList.push(room);
-                            });
+                            responseJson.roomList.forEach(room => roomList.push(room));
                         }
+                    } else if(responseJson.responseType == "joinRoom"){
+                        userList.splice(0);
+                        responseJson.userList.forEach(user => userList.push(user));
                     }
                 }
             }
 
-            // 서버에 요청
-            const request =(data)=>{
-                ws.send(data);
-            }
+            const request =(data)=> ws.send(data);
 
-            // 방만들기 요청
-            /*
-                {
-                    requestType : "createRoom",
-                    userId : "qwer",
-                    roomName : "room1"
-                }
-             */
             const createRoom =()=>{
                 let payload = {
                     requestType : "createRoom",
-                    userId : $("input[name='id']").val() ,
+                    userId : $("input[name='id']").val(),
                     roomName : $("input[name='roomName']").val()
                 }
-                console.log(payload);
                 request(JSON.stringify(payload));
             }
 
+            const openRoom =()=>{
+                let payload2 = {
+                    requestType : "joinRoom",
+                    roomId : $("input[name='roomId']").val()
+                }
+                request(JSON.stringify(payload2));
+            }
+
+            const openPop = ()=>{
+                showPop.value = true;
+                openRoom();
+            }
+            const closePop = ()=> showPop.value = false;
+
             connect();
 
-            return {roomList, memberList, createRoom, connect};
+            return {roomList, memberList, showPop, openRoom, createRoom, openPop, closePop};
         }
     }).mount("#app");
-
 </script>
 </body>
 </html>

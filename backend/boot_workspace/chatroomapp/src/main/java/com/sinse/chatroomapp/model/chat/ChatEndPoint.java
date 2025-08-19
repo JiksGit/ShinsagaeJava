@@ -14,8 +14,10 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,7 +31,7 @@ public class ChatEndPoint {
     // 클라이언트에게 전달할 접속자 명단
     private static Set<Member> memberList = new HashSet<>();
     // 클라이언트에게 전달할 룸 정보
-    private static Set<Room> roomList = new HashSet<>(); 
+    private static Set<Room> roomList = new HashSet<>();
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -145,6 +147,20 @@ public class ChatEndPoint {
             }
 
         } else if(requestType.equals("joinRoom")){
+            log.debug("방 들어가");
+            String roomId = jsonNode.get("roomId").asText();
+
+            Iterator<Room> roomIter =  roomList.iterator();
+            if(roomIter.hasNext()){
+                Room room = roomIter.next();
+                if(room.getUUID().equals(roomId)){
+                    log.debug("Room : " + room);
+                    String json = objectMapper.writeValueAsString(room);
+
+                    session.getAsyncRemote().sendText(json);
+                }
+            }
+
 
         } else if (requestType.equals("exitRoom")){
 
