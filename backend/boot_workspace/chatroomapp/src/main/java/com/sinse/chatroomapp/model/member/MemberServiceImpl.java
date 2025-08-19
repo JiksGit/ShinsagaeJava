@@ -1,4 +1,4 @@
-package com.sinse.chatroomapp.model;
+package com.sinse.chatroomapp.model.member;
 
 import com.sinse.chatroomapp.domain.Member;
 import com.sinse.chatroomapp.exception.MemberException;
@@ -16,6 +16,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public Member login(Member member) throws MemberException {
+        Member obj=memberDAO.login(member);
+        if(obj==null){
+            throw new MemberException("회원정보가 존재하지 않습니다");
+        }
+        return obj;
+    }
+
+    @Override
     public List<Member> selectAll() {
         return memberDAO.selectAll();
     }
@@ -23,11 +32,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member select(int member_id) {
         return memberDAO.select(member_id);
-    }
-
-    @Override
-    public Member selectById(String id) {
-        return memberDAO.selectById(id);
     }
 
     @Override

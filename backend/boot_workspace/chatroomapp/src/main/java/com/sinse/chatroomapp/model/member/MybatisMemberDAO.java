@@ -1,4 +1,4 @@
-package com.sinse.chatroomapp.model;
+package com.sinse.chatroomapp.model.member;
 
 import com.sinse.chatroomapp.domain.Member;
 import com.sinse.chatroomapp.exception.MemberException;
@@ -27,8 +27,9 @@ public class MybatisMemberDAO implements MemberDAO {
     }
 
     @Override
-    public Member selectById(String id) {
-        return memberMapper.selectById(id);
+    public Member login(Member member) {
+        Member obj=memberMapper.login(member);
+        return obj;
     }
 
     @Override

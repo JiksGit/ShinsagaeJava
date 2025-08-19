@@ -2,7 +2,7 @@ package com.sinse.chatroomapp.controller;
 
 import com.sinse.chatroomapp.domain.Member;
 import com.sinse.chatroomapp.exception.MemberException;
-import com.sinse.chatroomapp.model.MemberService;
+import com.sinse.chatroomapp.model.member.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +20,22 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @GetMapping("/chat/main")
+    public String main(HttpSession session){
+        String viewName = "chat/main";
+
+        if(session.getAttribute("member") == null){
+            viewName = "member/login";
+            return viewName;
+        }
+        return viewName;
+    }
+
+    @GetMapping("/chat/room")
+    public String room(HttpSession session){
+        return "chat/room";
+    }
+
     @GetMapping("/member/list")
     public ModelAndView memberList(ModelAndView mav) {
         List<Member> memberList =  memberService.selectAll();
@@ -34,6 +50,8 @@ public class MemberController {
     public String registerForm(){
         return "member/regist";
     }
+
+
 
     @PostMapping("/member/join")
     public String join(Member member){
@@ -53,13 +71,13 @@ public class MemberController {
 
     @PostMapping("/member/login")
     public String login(Member member, HttpSession session){
-        Member mem = memberService.selectById(member.getId());
-
-        if(mem == null ){
-            return "redirect:/member/loginform";
+        try{
+            Member mem = memberService.login(member);
+            session.setAttribute("member", mem);
+        } catch(MemberException e){
+            e.printStackTrace();
         }
-        session.setAttribute("member", mem);
 
-        return "redirect:/member/list";
+        return "redirect:/chat/main";
     }
 }

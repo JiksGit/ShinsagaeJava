@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        #wrapper{
+            width:2000px;
+            height:800px;
+            background-color:yellow;
+            overflow: hidden;
+        }
+        #aside{
+            width: 200px;
+            height: 800px;
+            background: darkolivegreen;
+            float: left;
+        }
+        #content{
+            width: 1000px;
+            height: 800px;
+            background-color: darkgreen;
+            float: left;
+        }
+        .room{
+            width:186px;
+            height:250px;
+            background: yellow;
+            border-radius: 2px;
+            border:5px solid darkcyan;
+            display: inline-block;
+            margin:1px;
+        }
+        .room-header{
+            width:100%;
+            height:25px;
+            background-color: #55d140;
+        }
+        .room-body{
+            width:100%;
+            height:225px;
+            background: #04AA6D;
+        }
+
+        /*
+            팝업
+         */
+        #pop {
+            width: 800px;
+            height: 800px;
+            float:left;
+        }
+        #content2 {
+            width: 620px;
+            height: 700px;
+            float : left;
+        }
+        #content-header{
+            height: 50px;
+            background-color: #FBF3D5;
+        }
+        #content-body{
+            height: 650px;
+            background-color: #D6A99D;
+        }
+        #aside2 {
+            width: 180px;
+            height: 700px;
+            float : left;
+        }
+        #aside-header{
+            height: 50px;
+            background-color: #D6DAC8;
+        }
+        #aside-body{
+            height: 600px;
+            background-color: #9CAFAA;
+        }
+        #aside-footer{
+            height: 50px;
+            background-color: #7c7c79;
+        }
+        #aside-footer > button {
+            width: 100px;
+            height: 40px;
+        }
+        #footer{
+            width: 100%;
+            height: 100px;
+            background-color: #FBF3D5;
+            clear: both;
+        }
+        #footer > textarea{
+            width: 80%;
+            height: 80%;
+            margin : 5px 0 0 90px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="wrapper">
+        <div id="aside">
+            <div th:if="${session.member != null}">
+                <h4 th:text="${'id : ' + session.member.id}"></h4>
+                <h4 th:text="|${session.member.name}님|"></h4>
+            </div>
+            <input type="text" placeholder="방제목 입력" name="roomName">
+            <input type="hidden" th:value="${session.member.id}" name="id">
+            <button type="button" @click="createRoom()">방만들기</button>
+
+            <ul>
+                <li>접속자 목록</li>
+                <li v-for="member in memberList">{{member.name}}</li>
+            </ul>
+        </div>
+        <div id="content">
+            <div class="room" v-for="room in roomList">
+                <div class="room-header">{{room.roomName}}</div>
+                <div class="room-body">{{room.master}}</div>
+            </div>
+        </div>
+
+        <!-- 팝업 시작 -->
+        <div id="pop">
+            <div id="content2">
+                <div id="content-header"></div>
+                <div id="content-body"></div>
+            </div>
+            <div id="aside2">
+                <div id="aside-header"></div>
+                <div id="aside-body"></div>
+                <div id="aside-footer">
+                    <button>나가기</button>
+                </div>
+            </div>
+            <div id="footer">
+                <textarea></textarea>
+            </div>
+        </div>
+        <!-- 팝업 종료 -->
+    </div>
+</div>
+<script>
+    const {createApp, reactive, ref} = Vue;
+
+    createApp({
+        setup(){
+            let roomList=reactive([]);
+            let memberList=reactive([]);
+            let ws = null;
+
+            const connect=()=>{
+                ws = new WebSocket("ws://localhost:8989/chat/multi");
+
+                // 접속이 성공되면..
+                ws.onopen = (event) =>{
+
+                }
+
+                // 메시지가 수신되면..
+                ws.onmessage=(e)=>{
+                    console.log("접속과 동시에 수신받은 데이터는 : " + e.data);
+
+                    // JSON 파싱하는 이유? 데이터를 객체 취급하여 ,찍고 접근하기 위함..
+                    const responseJson = JSON.parse(e.data);
+
+                    if(responseJson.responseType == "createRoom"){
+                        memberList.splice(0);
+                        roomList.splice(0);
+
+                        // 접속자 명단
+                        responseJson.memberList.forEach(member=>{
+                            memberList.push(member);
+                        });
+
+                        // 채팅방 목록
+                        if(responseJson.roomList != null){
+                            responseJson.roomList.forEach(room => {
+                                roomList.push(room);
+                            });
+                        }
+                    }
+                }
+            }
+
+            // 서버에 요청
+            const request =(data)=>{
+                ws.send(data);
+            }
+
+            // 방만들기 요청
+            /*
+                {
+                    requestType : "createRoom",
+                    userId : "qwer",
+                    roomName : "room1"
+                }
+             */
+            const createRoom =()=>{
+                let payload = {
+                    requestType : "createRoom",
+                    userId : $("input[name='id']").val() ,
+                    roomName : $("input[name='roomName']").val()
+                }
+                console.log(payload);
+                request(JSON.stringify(payload));
+            }
+
+            connect();
+
+            return {roomList, memberList, createRoom, connect};
+        }
+    }).mount("#app");
+
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package com.sinse.chatroomapp.model;
+package com.sinse.chatroomapp.model.member;
 
 import com.sinse.chatroomapp.domain.Member;
 
@@ -8,7 +8,7 @@ public interface MemberService {
 
     public List<Member> selectAll();
     public Member select(int member_id);
-    public Member selectById(String id);
+    public Member login(Member member);
     public void regist(Member member);
     public void update(Member member);
     public void delete(int member_id);
