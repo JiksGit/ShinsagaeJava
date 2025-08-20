@@ -4,20 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinse.chatroomapp.domain.Member;
-import com.sinse.chatroomapp.dto.Room;
-import com.sinse.chatroomapp.dto.RoomResponse;
+import com.sinse.chatroomapp.dto.*;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.EndpointConfig;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -65,8 +59,8 @@ public class ChatEndPoint {
                   }
              */
             // 응답 정보 만들기
-            RoomResponse roomResponse = new RoomResponse();
-            roomResponse.setResponseType("createRoom");
+            CreateRoomResponse createRoomResponse = new CreateRoomResponse();
+            createRoomResponse.setResponseType("createRoom");
 
             // 회원 정보 채우기
             Member obj = new Member();
@@ -75,9 +69,9 @@ public class ChatEndPoint {
             obj.setEmail(member.getEmail());
             memberList.add(obj);
 
-            roomResponse.setMemberList(memberList);
+            createRoomResponse.setMemberList(memberList);
 
-            String json = objectMapper.writeValueAsString(roomResponse); // java --> json 문자열로 변환
+            String json = objectMapper.writeValueAsString(createRoomResponse); // java --> json 문자열로 변환
 
             session.getAsyncRemote().sendText(json);
         }
@@ -116,7 +110,7 @@ public class ChatEndPoint {
                 obj.setEmail(member.getEmail());
 
                 users.add(obj);
-                room.setUsers(users);
+                room.setUserList(users);
 
                 roomList.add(room);
 
@@ -137,36 +131,151 @@ public class ChatEndPoint {
                         ]
                     }
                  */
-                RoomResponse roomResponse = new RoomResponse();
-                roomResponse.setResponseType("createRoom");
-                roomResponse.setMemberList(memberList);
-                roomResponse.setRoomList(roomList);
-                String json = objectMapper.writeValueAsString(roomResponse);
+                CreateRoomResponse createRoomResponse = new CreateRoomResponse();
+                createRoomResponse.setResponseType("createRoom");
+                createRoomResponse.setMemberList(memberList);
+                createRoomResponse.setRoomList(roomList);
+                String json = objectMapper.writeValueAsString(createRoomResponse);
 
                 session.getAsyncRemote().sendText(json);
             }
 
-        } else if(requestType.equals("joinRoom")){
+        } else if(requestType.equals("enterRoom")){
             log.debug("방 들어가");
-            String roomId = jsonNode.get("roomId").asText();
+            /*
+                1) 요청한 클라이언트를 선택한 방에 밀어넣기
+                    - 넘겨받은 uuid를 이용하여 방선택
+                    - 해당 Roomid 보유한 Set에 클라이언트를 참여자 등록(중복 피하기)
+             */
+            String uuid = jsonNode.get("uuid").asText();
+            Room room = null;
 
-            Iterator<Room> roomIter =  roomList.iterator();
-            if(roomIter.hasNext()){
-                Room room = roomIter.next();
-                if(room.getUUID().equals(roomId)){
-                    log.debug("Room : " + room);
-                    String json = objectMapper.writeValueAsString(room);
+            for(Room r : roomList){
+                if(r.getUUID().equals(uuid)){
+                    room = r;
+                    break;
+                }
+            }
+            /*
+            선언적 프로그래밍 방식으로도 위의 작업을 진행할 수 있다
+            데이터 집합을 다룰 때 최적화되어있음
+            */
+            /*
+            roomList.stream()
+                    .filter(r -> uuid.equals(r.getUUID())) // 조건에 맞는 요소만 추림
+                    .findFirst() // 조건에 맞는 첫번째 요소 반환
+                    .orElse(null); // 없으면 null 리턴
+             */
+            // 찾아낸 Room 안에 채팅 참여자로 등록(등록되어 있지 않은 사람만 등록)
 
-                    session.getAsyncRemote().sendText(json);
+            // 현재 클라이언트와 연결된 session에 담겨진 회원 정보를 추출
+            Member member = (Member) session.getUserProperties().get("member");
+
+            // 룸에 들어있는 유저들 정보와 비교하여 같지 않은 경우에만 유저를 방에 추가
+            boolean exists = false;
+            for(Member obj : room.getUserList()){
+                if(obj.getId().equals(member.getId())){
+                    exists = true; // 중복 발견
+                    break;
+                }
+            }
+            // 룸에 등록되어 있지 않다면..
+            Member obj;
+            if(exists == false){
+                obj = new Member();
+                obj.setId(member.getId());
+                obj.setName(member.getName());
+                obj.setEmail(member.getEmail());
+                room.getUserList().add(obj); // 채팅방 참여자로 등록
+            }
+
+            /*
+            {
+                responseType : "enterRoom",
+                room : {
+                }
+            }
+             */
+            EnterRoomResponse enterRoomResponse = new EnterRoomResponse();
+            enterRoomResponse.setResponseType("enterRoom");
+            enterRoomResponse.setRoom(room);
+
+            String json = objectMapper.writeValueAsString(enterRoomResponse);
+
+            session.getAsyncRemote().sendText(json);
+        } else if (requestType.equals("chat")){
+            log.debug("채팅 요청 받음");
+
+            String sender = jsonNode.get("sender").asText();
+            String data = jsonNode.get("data").asText();
+            String uuid =  jsonNode.get("uuid").asText();
+
+            /*
+            1) 같은 방에 있는 유저들에게 브로드캐스팅한다
+             */
+            Room room = null;
+            for(Room r : roomList){
+                if(r.getUUID().equals(uuid)){
+                    room = r;
+                    break;
                 }
             }
 
+            /*
+            {
+                responseType : "chat",
+                sender : ,
+                data : ,
+                uuid :
+            }
+             */
 
-        } else if (requestType.equals("exitRoom")){
+            // 전송 메시지 구성하기
+            ChatResponse chatResponse = new ChatResponse();
+            chatResponse.setResponseType("chat");
+            chatResponse.setSender(sender);
+            chatResponse.setData(data);
+            String json = objectMapper.writeValueAsString(chatResponse);
 
-        } else if(requestType.equals("chat")){
+            for(Session ss : userList){
+                for(Member member : room.getUserList()){
+                    Member obj = (Member) ss.getUserProperties().get("member");
+                    if(obj.getId().equals(member.getId())){
+                        ss.getAsyncRemote().sendText(json);
+                    }
+                }
+            }
+
+        } else if(requestType.equals("exitRoom")){
 
         }
+    }
+    @OnClose
+    public void onClose(Session session) throws Exception {
+        Member member = (Member) session.getUserProperties().get("member");
+
+        memberList.remove(member);
+        userList.remove(session);
+
+        Room room = null;
+        Member mr = null;
+        for( Room r : roomList){
+            for(Member obj : r.getUserList()){
+                if(obj.getId().equals(member.getId())){
+                    room = r;
+                    mr = obj;
+                    break;
+                }
+            }
+        }
+        room.getUserList().remove(mr);
+
+        CloseResponse closeResponse = new CloseResponse();
+        closeResponse.setResponseType("close");
+        closeResponse.setMemberList(memberList);
+        closeResponse.setRoomList(roomList);
+
+//        session.getAsyncRemote().sendText(objectMapper.writeValueAsString(closeResponse));
     }
 }
 

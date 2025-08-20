@@ -45,7 +45,9 @@
             height: 800px;
             background-color: #eaf4ea; /* 은은한 라이트그린 */
             float: left;
-            position: relative;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
         /* 채팅방 카드 */
@@ -79,17 +81,21 @@
 
         /* 팝업 */
         #pop {
-            width: 1000px;
-            height: 800px;
+            width: 650px;
+            height: 550px;
             position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             background-color: #fff;
             z-index: 9999;
             overflow: hidden;
             flex-direction: column;
         }
         #content2 {
-            width:800px;
-            height:750px;
+            width: 500px;
+            height: 450px;
             float: left;
         }
         #content-header{
@@ -102,18 +108,17 @@
             padding-left: 10px;
         }
         #content-body{
-            height: 700px;
+            height: 400px;
             background-color: #fafafa;
         }
 
         #aside2 {
-            width:200px;
-            height:750px;
+            width: 150px;
+            height: 450px;
             float: left;
             background: #f5f5f5;
         }
         #aside-header{
-            width: 200px;
             height: 50px;
             background-color: #e0e0e0;
             display: flex;
@@ -122,13 +127,11 @@
             font-weight: bold;
         }
         #aside-body{
-            width: 200px;
-            height: 650px;
+            height: 350px;
             padding: 5px;
             overflow-y: auto;
         }
         #aside-footer{
-            width: 200px;
             height: 50px;
             display: flex;
             align-items: center;
@@ -148,22 +151,20 @@
         }
 
         #footer{
-            width:100%;
-            height:50px;
+            width: 100%;
+            height: 100px;
             background-color: #f1f1f1;
+            clear: both;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        #footer input{
-            width:80%;
-            height:35px;
-            font-size:17px;
-        }
-        #footer button{
-            width:10%;
-            height:35px;
-            font-size:17px;
+        #footer > textarea{
+            width: 90%;
+            height: 80%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            resize: none;
         }
     </style>
 </head>
@@ -178,7 +179,6 @@
             <input type="text" placeholder="방제목 입력" name="roomName">
             <input type="hidden" th:value="${session.member.id}" name="id">
             <button type="button" @click="createRoom()">방만들기</button>
-            <button type="button" @click="disconnect()">연결끊기</button>
 
             <ul>
                 <li>접속자 목록</li>
@@ -187,38 +187,35 @@
         </div>
 
         <div id="content">
-            <!-- 팝업 -->
-            <div id="pop" v-show="flag">
-                <div id="content2">
-                    <div id="content-header">{{roomName}}</div>
-                    <div id="content-body" style="white-space: pre-line">{{message}}</div>
-                </div>
-                <div id="aside2">
-                    <div id="aside-header">{{master}}</div>
-                    <div id="aside-body">
-                        <ul>
-                            <li  v-for="user in userList" key="user.id">{{user.id}}</li>
-                        </ul>
-                    </div>
-                    <div id="aside-footer">
-                        <button @click="closePop()">나가기</button>
-                    </div>
-                </div>
-                <div id="footer">
-                    <input type="text" v-model="msg">
-                    <button type="button" @click="sendMessage()">Send</button>
-                </div>
-            </div>
-
-            <div class="room" v-for="room in roomList" key="room.uuid">
-                <div class="room-header">
-                    <a href="" @click.prevent="openForm(room.uuid)">{{room.roomName}}</a>
-                </div>
+            <div class="room" v-for="room in roomList" @click="openPop()">
+                <div class="room-header">{{room.roomName}}</div>
                 <div class="room-body">{{room.master}}</div>
+                <input type="hidden" name="roomId" :value="room.uuid">
             </div>
         </div>
 
-
+        <!-- 팝업 -->
+        <div id="pop" v-show="showPop">
+            <div id="content2">
+                <div id="content-header">채팅방</div>
+                <div id="content-body"></div>
+            </div>
+            <div id="aside2">
+                <div id="aside-header">방장이름</div>
+                <div id="aside-body">
+                    <ul>
+                        <li>채팅방 유저 목록</li>
+                        <li v-for="user in userList">{{user.name}}</li>
+                    </ul>
+                </div>
+                <div id="aside-footer">
+                    <button @click="closePop()">나가기</button>
+                </div>
+            </div>
+            <div id="footer">
+                <textarea placeholder="메시지를 입력하세요..."></textarea>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -229,21 +226,16 @@
         setup(){
             let roomList=reactive([]);
             let memberList=reactive([]);
-            let ws = null;
-            let flag = ref(false);
-            // 채팅방
             let userList=reactive([]);
-            let roomName = ref("");
-            let master = ref("");
-            let uuid = ref("");
-            let msg = ref("");
-            let message = ref("");
+            let ws = null;
+            let showPop = ref(false);
 
             const connect=()=>{
                 ws = new WebSocket("ws://localhost:8989/chat/multi");
                 ws.onopen = ()=>{};
                 ws.onmessage=(e)=>{
                     const responseJson = JSON.parse(e.data);
+                    console.log(responseJson);
                     if(responseJson.responseType == "createRoom"){
                         memberList.splice(0);
                         roomList.splice(0);
@@ -251,24 +243,11 @@
                         if(responseJson.roomList != null){
                             responseJson.roomList.forEach(room => roomList.push(room));
                         }
-                    } else if(responseJson.responseType == "enterRoom"){
+                    } else if(responseJson.responseType == "joinRoom"){
                         userList.splice(0);
-                        roomName.value = responseJson.room.roomName;
-                        master.value = responseJson.room.master;
-                        uuid.value = responseJson.room.uuid;
-                        responseJson.room.userList.forEach(user => userList.push(user));
-                    } else if(responseJson.responseType == "chat"){
-                        console.log(responseJson);
-                        let sender = responseJson.sender;
-                        let data = responseJson.data;
-                        let uuid = responseJson.uuid;
-
-                        // zino 님 : ㅎㅇ?
-                        message.value += `${sender}님 : ${data} \n`;
+                        responseJson.memberList.forEach(user => userList.push(user));
+                        console.log(userList);
                     }
-                }
-                ws.onclose=(e)=>{
-                    console.log(e);
                 }
             }
 
@@ -283,38 +262,23 @@
                 request(JSON.stringify(payload));
             }
 
-            const openForm = (roomId)=>{
-                flag.value = !flag.value;
-
-                let payload = {
-                    requestType : "enterRoom",
-                    uuid : roomId
+            const openRoom =()=>{
+                let payload2 = {
+                    requestType : "joinRoom",
+                    roomId : $("input[name='roomId']").val()
                 }
-                request(JSON.stringify(payload));
+                request(JSON.stringify(payload2));
             }
 
-            // 서버에 메시지 보내기
-            const sendMessage = () =>{
-                let payload = {
-                    requestType : "chat",
-                    sender : $("input[name='id']").val(),
-                    data : msg.value,
-                    uuid : uuid.value
-                }
-                request(JSON.stringify(payload));
-                msg.value ="";
+            const openPop = ()=>{
+                showPop.value = true;
+                openRoom();
             }
-
-            // 서버와 접속 끊기
-            const disconnect=()=>{
-                ws.close();
-            }
-
-            const closePop = ()=> flag.value = false;
+            const closePop = ()=> showPop.value = false;
 
             connect();
 
-            return {roomList, userList, memberList, flag, master, roomName, uuid, msg, message, sendMessage, createRoom, openForm, closePop, disconnect};
+            return {roomList, userList, memberList, showPop, openRoom, createRoom, openPop, closePop};
         }
     }).mount("#app");
 </script>
