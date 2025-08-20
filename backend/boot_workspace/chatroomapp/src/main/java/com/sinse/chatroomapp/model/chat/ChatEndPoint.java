@@ -137,7 +137,11 @@ public class ChatEndPoint {
                 createRoomResponse.setRoomList(roomList);
                 String json = objectMapper.writeValueAsString(createRoomResponse);
 
-                session.getAsyncRemote().sendText(json);
+                // 방이 생성된 사실을 서버에 접속한 모든~~ 클라이언트가 알아야 하므로,
+                // 브로드캐스팅의 대상이 된다
+                for(Session ss : userList){
+                    ss.getAsyncRemote().sendText(json);
+                }
             }
 
         } else if(requestType.equals("enterRoom")){
@@ -252,29 +256,29 @@ public class ChatEndPoint {
     }
     @OnClose
     public void onClose(Session session) throws Exception {
-        Member member = (Member) session.getUserProperties().get("member");
-
-        memberList.remove(member);
-        userList.remove(session);
-
-        Room room = null;
-        Member mr = null;
-        for( Room r : roomList){
-            for(Member obj : r.getUserList()){
-                if(obj.getId().equals(member.getId())){
-                    room = r;
-                    mr = obj;
-                    break;
-                }
-            }
-        }
-        room.getUserList().remove(mr);
-
-        CloseResponse closeResponse = new CloseResponse();
-        closeResponse.setResponseType("close");
-        closeResponse.setMemberList(memberList);
-        closeResponse.setRoomList(roomList);
-
+//        Member member = (Member) session.getUserProperties().get("member");
+//
+//        memberList.remove(member);
+//        userList.remove(session);
+//
+//        Room room = null;
+//        Member mr = null;
+//        for( Room r : roomList){
+//            for(Member obj : r.getUserList()){
+//                if(obj.getId().equals(member.getId())){
+//                    room = r;
+//                    mr = obj;
+//                    break;
+//                }
+//            }
+//        }
+//        room.getUserList().remove(mr);
+//
+//        CloseResponse closeResponse = new CloseResponse();
+//        closeResponse.setResponseType("close");
+//        closeResponse.setMemberList(memberList);
+//        closeResponse.setRoomList(roomList);
+//
 //        session.getAsyncRemote().sendText(objectMapper.writeValueAsString(closeResponse));
     }
 }

@@ -307,7 +307,9 @@
 
             // 서버와 접속 끊기
             const disconnect=()=>{
-                ws.close();
+                if(ws && ws.readyState==WebSocket.OPEN){ //이미 연결이 존재할때만 끊기
+                    ws.close(1000 , "사용자 요청에 의한 접속 종료");
+                }
             }
 
             const closePop = ()=> flag.value = false;
