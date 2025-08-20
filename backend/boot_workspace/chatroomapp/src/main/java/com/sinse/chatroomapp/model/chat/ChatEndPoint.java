@@ -278,7 +278,7 @@ public class ChatEndPoint {
 //        closeResponse.setResponseType("close");
 //        closeResponse.setMemberList(memberList);
 //        closeResponse.setRoomList(roomList);
-//
+//          gd
 //        session.getAsyncRemote().sendText(objectMapper.writeValueAsString(closeResponse));
     }
 }
