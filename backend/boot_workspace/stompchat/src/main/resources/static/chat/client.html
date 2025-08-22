@@ -6,7 +6,6 @@
     <title>Document</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!--    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@2.3.3/bundles/stomp.umd.min.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
@@ -88,30 +87,26 @@
                     stompClient.connect({}, ()=>{
                         connected.value = true; // 바인딩 변수를 true로 놓아야 화면 전환
 
-                        // ???? subscribe시에는 connect가 안되어있어서 msg가 안날라와서 console.log가 안떠야하는데
-                        // subscribe는 비동기처리가 되어있는건가
-
                         // 접속과 동시에 원하는 채널을 구독하자
                         stompClient.subscribe("/topic/users", (msg)=>{
-                            console.log("접속과 동시에 구독했던 메시지 받기 : " + msg.body);
                             users.value = JSON.parse(msg.body);
                         });
 
                         // 채팅 메시지 구독
                         stompClient.subscribe("/topic/messages", (msg)=>{
-                            console.log("22222 : " + msg.body);
                             messages.value.push(JSON.parse(msg.body));
                         })
 
                         // 방 목록 메시지 구독
                         stompClient.subscribe("/topic/rooms", (msg)=>{
-                            console.log("3333 : " + msg.body);
                             rooms.value = JSON.parse(msg.body);
                         })
 
                         // 서버에 메시지 보내기
                         stompClient.send("/app/connect", {}, JSON.stringify({sender : username.value}));
 
+                        // 접속과 동시에, 방 목록을 요청
+                        getRooms();
                     });
                 }
 
@@ -122,6 +117,10 @@
                            content : message.value
                        }) );
                     }
+                }
+
+                const getRooms=()=>{
+                    stompClient.send("/app/room.list", {}, {});
                 }
 
                 const createRoom=()=>{
@@ -148,8 +147,31 @@
                     }));
                 }
 
+                const disconnect=()=>{
+                    // 종료로 인하여 웹소켓이 끊기면 서버가 보내준 구독 브로드캐스팅 정보 조차 받을 수없다.
+                    stompClient.send("/app/disconnect", {}, JSON.stringify({
+                        sender : username.value
+                    }));
+
+                    stompClient.disconnect();
+
+                    let newUsers = [];
+
+                    // 기존 유저 목록이 들어있는 배열에서, 현재 사용자를 제거한 후
+                    // 최종 배열을 생성
+                    console.log("user.value : " + users.value);
+                    for (let i=0; i< users.value.length; i++){
+                        if( users.value[i] != username.value ){
+                            newUsers.push(users.value[i]);
+                        }
+                    }
+                    users.value = newUsers;
+
+                    connected.value = false;
+                }
+
                 return {message, connected, username, users, messages, roomName, rooms,
-                    connect, sendMessage, createRoom, enterRoom, leaveRoom}
+                    connect, sendMessage, getRooms, createRoom, enterRoom, leaveRoom, disconnect}
             }
         }).mount("#app");
 
