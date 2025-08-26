@@ -1,4 +1,4 @@
-package com.sinse.electroshop.model.shop;
+package com.sinse.electroshop.model.store;
 
 import com.sinse.electroshop.domain.Store;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class JPAStoreDAO implements StoreDAO {
     }
 
     @Override
-    public Store findById(int store_id) {
+    public Store findById(int  store_id) {
         return storeRepository.findById(store_id).orElse(null);
     }
 

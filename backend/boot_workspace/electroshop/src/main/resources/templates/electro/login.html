@@ -41,13 +41,13 @@
 </head>
 <body>
 
-<h3>Contact Form</h3>
+<h3>회원 로그인</h3>
 
 <div class="container">
     <form id="form1">
-        <input type="text" id="fname" name="id" placeholder="상점 ID 입력">
+        <input type="text" id="fname" name="id" placeholder="회원 ID 입력">
         <input type="text" id="lname" name="pwd" placeholder="비밀번호 입력..">
-<!--        <input type="text" name="store_name" placeholder="Your last name..">-->
+<!--        <input type="text" name="m_name" placeholder="Your name..">-->
         <input type="button" value="Submit" id="bt_login">
     </form>
 
@@ -56,11 +56,16 @@
     function login(){
         //상점 로그인 요청
         $.ajax({
-            url:"/store/login",
+            url:"/member/login",
             type:"POST",
             data:$("#form1").serialize(),
             success:function(data){
                 console.log(data);
+                alert("로그인 성공");
+                window.location.href = "/shop/main";
+            },
+            error:function(data){
+                alert(data.responseText);
             }
         });
     }

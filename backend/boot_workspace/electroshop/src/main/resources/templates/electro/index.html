@@ -34,8 +34,12 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
 </head>
 <body>
+<div id="app">
 <!-- HEADER -->
 <header>
     <!-- TOP HEADER -->
@@ -59,42 +63,16 @@
         <!-- row -->
         <div class="row">
             <!-- shop -->
-            <div class="col-md-4 col-xs-6">
+            <div class="col-md-4 col-xs-6" v-for = "product in productList">
                 <div class="shop">
                     <div class="shop-img">
-                        <img src="/electro/img/shop01.png" alt="">
+                        <img :src="`/electro/img/shop0${product.productId}.png`" alt="">
                     </div>
                     <div class="shop-body">
-                        <h3>Laptop<br>Collection</h3>
-                        <a href="#" class="cta-btn">Shop now <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            <!-- /shop -->
-
-            <!-- shop -->
-            <div class="col-md-4 col-xs-6">
-                <div class="shop">
-                    <div class="shop-img">
-                        <img src="/electro/img/shop03.png" alt="">
-                    </div>
-                    <div class="shop-body">
-                        <h3>Accessories<br>Collection</h3>
-                        <a href="#" class="cta-btn">Shop now <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            <!-- /shop -->
-
-            <!-- shop -->
-            <div class="col-md-4 col-xs-6">
-                <div class="shop">
-                    <div class="shop-img">
-                        <img src="/electro/img/shop02.png" alt="">
-                    </div>
-                    <div class="shop-body">
-                        <h3>Cameras<br>Collection</h3>
-                        <a href="#" class="cta-btn">Shop now <i class="fa fa-arrow-circle-right"></i></a>
+                        <h3>{{product.productName}}</h3>
+                        <h4>{{product.brand}}</h4>
+                        <h4>{{product.price}}원</h4>
+                        <a :href="`/product/detail?product_id=${product.productId}`" class="cta-btn">{{product.store.store_name}} <i class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -839,6 +817,7 @@
     <!-- /bottom footer -->
 </footer>
 <!-- /FOOTER -->
+</div>
 
 <!-- jQuery Plugins -->
 <script src="/electro/js/jquery.min.js"></script>
@@ -848,5 +827,32 @@
 <script src="/electro/js/jquery.zoom.min.js"></script>
 <script src="/electro/js/main.js"></script>
 
+<script>
+    const {createApp, reactive, ref} = Vue;
+
+    createApp({
+        setup(){
+            const productList = reactive([]);
+
+            const getList =()=>{
+                $.ajax({
+                        url : "http://localhost:9999/product/list",
+                        method:"GET",
+                        success:result=>{
+                            console.log(result);
+                            productList.splice(0);
+                            result.forEach((item)=>{
+                                productList.push(item);
+                            });
+                        }
+                })
+            }
+
+            getList();
+
+            return {productList, getList}
+        }
+    }).mount("#app");
+</script>
 </body>
 </html>

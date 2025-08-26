@@ -41,22 +41,22 @@
 </head>
 <body>
 
-<h3>Contact Form</h3>
+<h3>회원가입</h3>
 
 <div class="container">
     <form id="form1">
-        <input type="text" id="fname" name="id" placeholder="상점 ID 입력">
+        <input type="text" id="fname" name="id" placeholder="회원 ID 입력">
         <input type="text" id="lname" name="pwd" placeholder="비밀번호 입력..">
-<!--        <input type="text" name="store_name" placeholder="Your last name..">-->
-        <input type="button" value="Submit" id="bt_login">
+        <input type="text" name="name" placeholder="Your name..">
+        <input type="button" value="Submit" id="bt_regist">
     </form>
 
 </div>
 <script>
-    function login(){
+    function regist(){
         //상점 로그인 요청
         $.ajax({
-            url:"/store/login",
+            url:"/member/regist",
             type:"POST",
             data:$("#form1").serialize(),
             success:function(data){
@@ -66,8 +66,8 @@
     }
 
     $(()=>{
-        $("#bt_login").click(()=>{
-            login();
+        $("#bt_regist").click(()=>{
+            regist();
         });
     });
 </script>

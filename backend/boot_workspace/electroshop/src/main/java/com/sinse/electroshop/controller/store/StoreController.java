@@ -2,7 +2,7 @@ package com.sinse.electroshop.controller.store;
 
 import com.sinse.electroshop.controller.dto.StoreDto;
 import com.sinse.electroshop.domain.Store;
-import com.sinse.electroshop.model.shop.StoreService;
+import com.sinse.electroshop.model.store.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

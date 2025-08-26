@@ -1,4 +1,4 @@
-package com.sinse.electroshop.model.shop;
+package com.sinse.electroshop.model.store;
 
 import com.sinse.electroshop.domain.Store;
 import lombok.RequiredArgsConstructor;
