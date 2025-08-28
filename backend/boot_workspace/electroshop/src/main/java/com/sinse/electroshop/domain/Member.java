@@ -7,10 +7,10 @@ import lombok.Data;
 @Table(name="member")
 @Data
 public class Member {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int member_id;
+    @JoinColumn(name = "member_id")
+    private int memberId;
 
     private String id;
     private String password;

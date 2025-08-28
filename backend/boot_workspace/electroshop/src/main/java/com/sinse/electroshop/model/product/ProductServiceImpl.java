@@ -9,21 +9,26 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-
     private final ProductDAO productDAO;
 
     @Override
-    public Product regist(Product product) {
-        return productDAO.save(product);
+    public List getList() {
+        return productDAO.selectAll();
     }
 
     @Override
-    public List<Product> getList() {
-        return productDAO.getAllProducts();
+    public List getListByStoreId(int storeId) {
+        return productDAO.selectByStoreId(storeId);
     }
 
     @Override
-    public Product getDetail(int product_id) {
-        return productDAO.findById(product_id);
+    public Product getDetail(int productId) {
+        return productDAO.selectById(productId);
     }
+
+    @Override
+    public Product save(Product product) {
+        return productDAO.regist(product);
+    }
+
 }

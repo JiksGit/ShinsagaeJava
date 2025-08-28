@@ -45,9 +45,8 @@
 
 <div class="container">
     <form id="form1">
-        <input type="text" id="fname" name="id" placeholder="회원 ID 입력">
-        <input type="text" id="lname" name="pwd" placeholder="비밀번호 입력..">
-<!--        <input type="text" name="m_name" placeholder="Your name..">-->
+        <input type="text" name="id" placeholder="회원 ID 입력">
+        <input type="text" name="pwd" placeholder="비밀번호 입력..">
         <input type="button" value="Submit" id="bt_login">
     </form>
 
@@ -61,11 +60,10 @@
             data:$("#form1").serialize(),
             success:function(data){
                 console.log(data);
-                alert("로그인 성공");
-                window.location.href = "/shop/main";
+                location.href="/shop/main";
             },
             error:function(data){
-                alert(data.responseText);
+                console.log(data);
             }
         });
     }
@@ -78,3 +76,5 @@
 </script>
 </body>
 </html>
+
+

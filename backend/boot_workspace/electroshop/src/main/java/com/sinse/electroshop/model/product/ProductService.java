@@ -5,8 +5,8 @@ import com.sinse.electroshop.domain.Product;
 import java.util.List;
 
 public interface ProductService {
-
-    public Product regist(Product product);
-    public List<Product> getList();
-    public Product getDetail(int product_id);
+    public List getList();
+    public List getListByStoreId(int storeId);
+    public Product getDetail(int productId);
+    public Product save(Product product);
 }

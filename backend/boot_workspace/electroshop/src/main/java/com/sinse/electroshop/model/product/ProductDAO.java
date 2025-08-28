@@ -5,10 +5,8 @@ import com.sinse.electroshop.domain.Product;
 import java.util.List;
 
 public interface ProductDAO {
-
-    public Product save(Product product);
-    public Product update(Product product);
-    public List<Product> getAllProducts();
-    public Product findById(int product_id);
-    public void delete(Product product);
+    public List selectAll();
+    public Product selectById(int productId);
+    public List<Product> selectByStoreId(int storeId);
+    public Product regist(Product product);
 }

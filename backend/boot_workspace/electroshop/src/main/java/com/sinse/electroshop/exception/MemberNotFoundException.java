@@ -1,14 +1,13 @@
 package com.sinse.electroshop.exception;
 
-public class MemberNotFoundException extends RuntimeException{
-
-    public MemberNotFoundException(String message){
-        super(message);
+public class MemberNotFoundException extends RuntimeException {
+    public MemberNotFoundException(String msg) {
+        super(msg);
     }
-    public MemberNotFoundException(String message, Throwable cause){
-        super(message, cause);
+    public MemberNotFoundException(String msg, Throwable cause) {
+        super(msg, cause);
     }
-    public MemberNotFoundException(Throwable cause){
+    public MemberNotFoundException(Throwable cause) {
         super(cause);
     }
 }

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AdminController {
 
-    @GetMapping("/store/main")
-    public String main(){
-        return "store/index";
+    @GetMapping("/admin/main")
+    public String main() {
+        return "admin/index";
     }
 }
