@@ -75,7 +75,9 @@
                   <tbody>
                   <tr th:each="product, status: ${productList}">
                     <td th:text="${product.store.storeName}"></td>
-                    <td th:text="${product.productName}">John Doe</td>
+                    <td>
+                        <a th:href="@{/store/product/detail(product_id=${product.productId})}" th:text="${product.productName}"></a>
+                    </td>
                     <td th:text="${product.brand}">11-7-2014</td>
                     <td th:text="${product.price}">11-7-2014</td>
                   </tr>

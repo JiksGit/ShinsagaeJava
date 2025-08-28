@@ -3,6 +3,7 @@ package com.sinse.electroshop.controller.store;
 import com.sinse.electroshop.controller.dto.ProductDTO;
 import com.sinse.electroshop.domain.Product;
 import com.sinse.electroshop.domain.Store;
+import com.sinse.electroshop.exception.ProductNotFoundException;
 import com.sinse.electroshop.model.product.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +66,18 @@ public class StoreProductController {
         List productList = productService.getListByStoreId(storeId);
         model.addAttribute("productList", productList);
         return "store/product/list";
+    }
+
+    @GetMapping("/product/detail")
+    public String getProductDetail(Model model, @RequestParam(name="product_id", required=false, defaultValue = "0") int productId){
+
+        if(productId==0){
+            throw new ProductNotFoundException("상품을 찾을수 없습니다");
+        }
+
+        Product product = productService.getDetail(productId);
+        model.addAttribute("product", product);
+
+        return "store/product/detail";
     }
 }
