@@ -45,7 +45,7 @@ public class ChatController {
 
         if(headerAccessor.getSessionAttributes().get("member") !=null) { //일반 회원이라면..
             Member member = (Member) headerAccessor.getSessionAttributes().get("member");
-            log.debug("웹소켓 Session에서 꺼낸 정보는 " + member.getName());
+            log.debug("웹소켓 Session에서 꺼낸 Member 정보는 " + member.getName());
             //log.debug("클라이언트 접속과 동시에 보낸 메시지 " + message.getContent());
 
             //일반 회원은 개설된 방에 참여하면 됨..하지만, 일반회원이 들어갈 방을 알아야 함?
@@ -59,7 +59,7 @@ public class ChatController {
 
         }else if(headerAccessor.getSessionAttributes().get("store") !=null){//상점회원이라면...
             Store store = (Store) headerAccessor.getSessionAttributes().get("store");
-            log.debug("웹소켓 Session에서 꺼낸 정보는 " + store.getStoreName());
+            log.debug("웹소켓 Session에서 꺼낸 Store 정보는 " + store.getStoreName());
             //log.debug("클라이언트 접속과 동시에 보낸 메시지 " + message.getContent());
 
 
@@ -87,5 +87,12 @@ public class ChatController {
             chatRoom.getCustomers().add(store.getBusinessId());
         }
         return chatRoom.getCustomers();
+    }
+
+    @MessageMapping("/chat.send")
+    @SendTo("/topic/messages")
+    public ChatMessage send(ChatMessage chatMessage){
+        log.debug("날라온 메시지 값 : " + chatMessage);
+        return chatMessage;
     }
 }

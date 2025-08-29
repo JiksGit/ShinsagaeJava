@@ -131,7 +131,7 @@
 					<div class="col-md-5">
 						<div class="product-details">
 							<h2 class="product-name" th:text="${product.productName}"></h2>
-							<input type="hidden" th:value="${product.productId}" id="productId">
+							<input type="hidden" th:value="${product.productId}" id="product_id">
 							<div>
 								<div class="product-rating">
 									<i class="fa fa-star"></i>
@@ -240,7 +240,7 @@
 												<ul class="reviews" v-for="message in messages">
 													<li>
 														<div class="review-heading">
-															<h5 class="name">John</h5>
+															<h5 class="name">{{message.sender}}</h5>
 															<p class="date">27 DEC 2018, 8:0 PM</p>
 															<div class="review-rating">
 																<i class="fa fa-star"></i>
@@ -251,10 +251,9 @@
 															</div>
 														</div>
 														<div class="review-body">
-															<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+															<p>{{message.content}}</p>
 														</div>
 													</li>
-
 												</ul>
 												<ul class="reviews-pagination">
 													<li class="active">1</li>
@@ -270,8 +269,11 @@
 										<!-- Review Form -->
 										<div class="col-md-3" v-if="connected">
 											<div id="review-form">
-												<form class="review-form">
-													<textarea class="input" placeholder="Your Review"></textarea>
+                                                <h3>
+                                                    참여자 수 <span>{{users.length}}</span>
+                                                </h3>
+                                                <input type="hidden" id="user_id" th:value="${session.member.id}">
+													<textarea class="input" placeholder="채팅을 입력하세요" v-model="message" @keyup.enter="sendMessage()"></textarea>
 													<div class="input-rating">
 														<span>Your Rating: </span>
 														<div class="stars">
@@ -283,7 +285,6 @@
 														</div>
 													</div>
 													<button class="primary-btn">Submit</button>
-												</form>
 											</div>
 										</div>
 
@@ -467,46 +468,51 @@
 			const {createApp, reative, ref}=Vue;
 
 			createApp({
-				setup(){
-					const productList=ref([]);
-					const connected=ref(false);//연결 정보를 시각적으로 표현하기 위한 논리값
-					const messages=ref([1,2,3,4,5,6,7,8,9]); //누적 채팅 메시지
+                setup() {
+                    const message = ref("");
+                    const messages = ref([]);
+                    const connected = ref(false);
+                    const users = ref([]);
+                    let stompClient = null;
 
-					//STOMP 객체 선언
-					let stompClient=null;
+                    const sendMessage = () => {
+                        if (message.value.trim()) {
+                            stompClient.send("/app/chat.send", {}, JSON.stringify({
+                                sender: $("#user_id").val(),
+                                content: message.value
+                            }));
+                            message.value = "";
+                        }
+                    };
 
-					//웹소켓 서버접속
-					const connect=()=>{
-						const websocket = new WebSocket("ws://localhost:9999/ws");
-						stompClient = Stomp.over(websocket);//웹소켓 위체 STOMP 얹혀 쓰겠다
+                    const connect = () => {
+                        const websocket = new WebSocket("ws://localhost:9999/ws");
+                        stompClient = Stomp.over(websocket);
 
-						//STOMP를 이용한 서버 연결 시도
-						stompClient.connect({}, ()=>{
-							//서버에 연결되면 이 콜백함수가 호출됨..
-							connected.value=true;
-							console.log("STOMP로 서버 연결 성공");
+                        stompClient.connect({}, () => {
+                            connected.value = true;
+                            console.log("STOMP 연결 성공");
 
-							//접속 후, 서버에 메시지 보내기
-							stompClient.send("/app/connect",{},JSON.stringify({
-								content:$("#product_id").val()
-							}));
+                            stompClient.send("/app/connect", {}, JSON.stringify({
+                                content: $("#product_id").val()
+                            }));
 
-                            // 상점이 들어올 때, 그 시점을 알기위한 구독 요청
-							stompClient.subscribe("/topic/users", (msg)=>{
-								console.log("채팅 참여자는 ",msg.body);
-							})
+                            stompClient.subscribe("/topic/users", (msg) => {
+                                console.log("채팅 참여자는 ", msg.body);
+                                users.value = JSON.parse(msg.body);
+                            });
 
+                            stompClient.subscribe("/topic/messages",(msg)=>{
+                                messages.value.push(JSON.parse(msg.body));
+                            });
+                        });
+                    };
 
-						});
-					}
-
-					return {
-						productList, connected, messages,
-						connect
-					}
-				}
-
-
+                    return {
+                        users, connected, message, messages,
+                        sendMessage, connect
+                    };
+                }
 			}).mount("#app");
 
 		</script>

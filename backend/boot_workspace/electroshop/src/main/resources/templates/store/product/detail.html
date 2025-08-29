@@ -45,41 +45,78 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
-          <!--등록폼 시작-->
-          <div class="card card-primary">
-            <div class="card-header">
-              <h3 class="card-title" v-if="isOnAir">LiveOn</h3>
-              <h3 class="card-title" v-else="isOnAir">LiveOff</h3>
-            </div>
-            <!-- /.card-header -->
-            <!-- form start -->
-            <form id="form1">
-              <input type="hidden" name="store.storeId" th:value="${product.store.storeId}">
-              <input type="hidden" name="product_id" id="product_id" th:value="${product.productId}">
+              <!--등록폼 시작-->
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title" v-if="isOnAir">LiveOn</h3>
+                  <h3 class="card-title" v-else="isOnAir">LiveOff</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form id="form1">
+                  <input type="hidden" name="store.storeId" th:value="${product.store.storeId}">
+                  <input type="hidden" name="product_id" id="product_id" th:value="${product.productId}">
 
-              <div class="card-body">
-                <div class="form-group">
-                  <input type="text" class="form-control" name="productName" th:value="${product.productName}">
-                </div>
-                <div class="form-group">
-                  <input type="number" class="form-control" name="price" th:value="${product.price}">
-                </div>
-                <div class="form-group">
-                  <input type="text" class="form-control" name="brand" th:value="${product.brand}">
-                </div>
-              </div>
-              <!-- /.card-body -->
+                  <div class="card-body">
+                    <div class="form-group">
+                      <input type="text" class="form-control" name="productName" th:value="${product.productName}">
+                    </div>
+                    <div class="form-group">
+                      <input type="number" class="form-control" name="price" th:value="${product.price}">
+                    </div>
+                    <div class="form-group">
+                      <input type="text" class="form-control" name="brand" th:value="${product.brand}">
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
 
-              <div class="card-footer">
-                <button type="button" id="bt_regist" class="btn btn-primary">수정</button>
-                <button type="button" id="bt_liveon" class="btn btn-success" @click="connect()">라이브 시작</button>
-                <button type="button" id="bt_liveoff" class="btn btn-danger">라이브 종료</button>
+                  <div class="card-footer">
+                    <button type="button" id="bt_regist" class="btn btn-primary">수정</button>
+                    <button type="button" id="bt_liveon" class="btn btn-success" @click="connect()">라이브 시작</button>
+                    <button type="button" id="bt_liveoff" class="btn btn-danger">라이브 종료</button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-          <!--등록폼 끝-->
-          </div>
+              <!--등록폼 끝-->
+              </div>
         </div>
+
+          <div class="row" v-if="isOnAir">
+              <div class="col-md-3">
+                  <!--채팅 참여자 목록 시작-->
+                  <textarea class="form-control" style="height: 470px">
+                      {{users.join("\n")}}
+                  </textarea>
+                  <!--채팅 참여자 목록 끝-->
+              </div>
+              <div class="col-md-9">
+                  <!--채팅폼 시작-->
+                  <div class="card card-primary">
+                      <div class="card-header">
+                          <h3 class="card-title" v-if="isOnAir">LiveOn</h3>
+                          <h3 class="card-title" v-else="isOnAir">LiveOff</h3>
+                      </div>
+                      <!-- /.card-header -->
+                      <div class="card-body">
+                          <div class="form-group">
+                              <input type="hidden" id="store_id" th:value="${session.store.businessId}">
+                              <input type="text" class="form-control" v-model="message" placeholder="채팅 메시지.." @keyup.enter="sendMessage()">
+                          </div>
+                          <div class="form-group">
+                              <textarea class="form-control" style="height: 250px">
+                                    {{messages.join("\n")}}
+                              </textarea>
+                          </div>
+                      </div>
+                      <!-- /.card-body -->
+
+                      <div class="card-footer">
+                          <button type="button" id="bt_send" class="btn btn-primary">메시지 전송</button>
+                      </div>
+                  </div>
+                  <!--채팅폼 끝-->
+              </div>
+          </div>
       </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
@@ -107,10 +144,22 @@
     createApp({
         setup(){
             const isOnAir = ref(false); // 방송중인지 여부
-
+            const users = ref([]); // 서버에서 보내온 메시지 배열
+            const messages = ref([]);
+            const message = ref([]);
 
             // 웹소켓 서버 접속
             let stompClient = null;
+
+            const sendMessage=()=>{
+                if(message.value.trim()){
+                    stompClient.send("/app/chat.send", {}, JSON.stringify({
+                        sender : $("#store_id").val(),
+                        content : message.value
+                    }));
+                    message.value="";
+                }
+            }
 
             const connect =()=>{
                 const webSocket = new WebSocket("ws://localhost:9999/ws");
@@ -120,6 +169,17 @@
                 stompClient.connect({}, ()=>{
                     // 접속이 성공되면 할 작업들...
                     isOnAir.value = true;
+
+                    stompClient.subscribe("/topic/users", (msg)=>{
+                        console.log("서버가 보낸 방참여자는 ", msg.body);
+                        users.value=JSON.parse(msg.body);
+                    })
+
+                    stompClient.subscribe("/topic/messages", (msg)=>{
+                        console.log("서버가 보낸 메시지는 : " , msg.body);
+                        const parsed = JSON.parse(msg.body);
+                        messages.value.push(parsed.sender+" : "+parsed.content);
+                    })
 
                     // 접속했음을 알리고(방송시작 알림)
                     stompClient.send("/app/connect", {}, JSON.stringify({
@@ -131,8 +191,8 @@
                 });
             }
 
-            return { isOnAir,
-                connect }
+            return { isOnAir, users, messages, message,
+                sendMessage, connect }
         }
     }).mount("#app");
 </script>
