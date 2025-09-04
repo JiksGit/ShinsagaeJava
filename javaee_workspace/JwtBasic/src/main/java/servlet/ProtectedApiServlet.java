@@ -12,31 +12,35 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-// 이 서블릿은 로그인에 성공한 클라이언트만이 접근할 수 있다..
-// 따라서 이 서블릿을 호출한다는 것은 이미 인증을 마친 클라이언트이어야 한다
+//이 서블릿은 로그인에 성공한 클라이언트만이 접근할 수 있다..
+//따라서 이 서블릿을 호출한다는 것은 이미 인증을 마친 클라이언트이어야 한다
 @WebServlet("/api/protected")
 public class ProtectedApiServlet extends HttpServlet{
-
-	@Override
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// 검증..
 		
+		//로그인 한 유저의 경우  request 객체 심어진 데이터를 가져가도록 
+		String username=(String)request.getAttribute("username");
 		
-		// 로그인한 유저의 경우 request 객체에 심어진 데이터를 가져가도록
-		String username = (String) request.getAttribute("username");
+		//응답 정보를 json으로 가져갈 수 있도록 처리 
+		response.setContentType("application/json; charset=utf-8");
+		Map<String, String> map=new HashMap<>();
 		
-		// 응답 정보를 json으로 가져갈 수 있도록 처리
-		response.setContentType("application/json;charset=utf-8");
-		/*
-		 {
-		 	"message" : "보호된 데이터 접근 성공",
-		 	"user" : "batman"
-		 }
-		 */
-		Map<String, String> map = new HashMap<>();
-		map.put("message", "보호된 데이터 접근 성공");
-		map.put("user", username);
-		
+		if(username == null) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);			
+			map.put("error", "로그인이 필요한 서비스입니다");
+		}else {
+			map.put("message", "보호된 데이터 접근 성공");
+			map.put("user", username);
+		}
 		response.getWriter().print(new Gson().toJson(map));
 	}
 }
+
+
+
+
+
+
+
+
