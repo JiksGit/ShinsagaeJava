@@ -1,10 +1,15 @@
 package com.sinse.jwtredis.security;
 
+import com.sinse.jwtredis.model.member.MemberDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,6 +21,22 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    // 개발자가 정의한 컨트롤러에서 AuthenticationManager를 사용할 예정이므로, 미리 등록
+    // 만일 개발자가 필요한 시점에 new를 해버리면, 스프링이 관리하는 Bean이 아니게 됨..
+    // 따라서 @Bean으로 등록해야 함
+    @Bean
+    public AuthenticationManager authenticationManager(MemberDetailsService memberDetailsService, PasswordEncoder passwordEncoder) throws Exception {
+        // AuthenticationManager는 DaoAuthenticationProvider를 통해
+        // 1) 유저 얻기(by id)
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(memberDetailsService);
+
+        // 2) 비번 검증(using passwordEncoder)
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(daoAuthenticationProvider);
     }
 
     @Bean

@@ -1,11 +1,15 @@
 package com.sinse.jwtredis.controller;
 
+import com.sinse.jwtredis.Domain.CustomUserDetails;
 import com.sinse.jwtredis.Domain.Member;
 import com.sinse.jwtredis.controller.dto.MemberDTO;
 import com.sinse.jwtredis.model.member.MemberService;
 import com.sinse.jwtredis.model.member.RegistService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,12 +20,14 @@ import java.util.Map;
 @RestController
 public class MemberController {
 
+    private AuthenticationManager authenticationManager;
     private RegistService registService;
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    public MemberController(RegistService registService, MemberService memberService) {
+    public MemberController(RegistService registService, MemberService memberService, AuthenticationManager authenticationManager) {
         this.registService = registService;
         this.memberService = memberService;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/member/regist")
@@ -50,8 +56,17 @@ public class MemberController {
         member.setId(memberDTO.getId());
         member.setPassword(memberDTO.getPwd());
 
-        // 인증에 성공하면 AccessToken(값) != RefreshToken(값) - 재발급의 대상이 되는 지 검증
+        // 인증 시도
+        Authentication authentication =authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(member.getId(), member.getPassword())
+        );
 
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        log.debug("인증받은 회원의 아이디는 " + userDetails.getUsername());
+        log.debug("인증받은 회원의 이메일은 " + userDetails.getEmail());
+
+        // 인증에 성공하면 AccessToken(값) != RefreshToken(값) - 재발급의 대상이 되는 지 검증
+        
         return ResponseEntity.ok("로그인 성공");
     }
 }
