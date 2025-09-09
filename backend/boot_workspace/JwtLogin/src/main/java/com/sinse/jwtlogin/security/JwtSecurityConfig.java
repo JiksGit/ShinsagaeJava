@@ -77,8 +77,6 @@ public class JwtSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/member/login.html").permitAll()
                         .requestMatchers("/member/login").permitAll()
-
-
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(provider)
