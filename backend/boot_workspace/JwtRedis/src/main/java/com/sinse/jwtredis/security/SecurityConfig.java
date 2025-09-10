@@ -1,5 +1,6 @@
 package com.sinse.jwtredis.security;
 
+import com.sinse.jwtredis.filter.JwtAuthFilter;
 import com.sinse.jwtredis.model.member.MemberDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +14,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtAuthFilter  jwtAuthFilter;
+
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -57,6 +65,7 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable())
 
                 .authorizeHttpRequests(auth->auth
+                        .requestMatchers("/index.html").permitAll()
                         .requestMatchers("/member/regist.html").permitAll()
                         .requestMatchers("/member/regist").permitAll()
                         .requestMatchers("/member/login.html").permitAll()
@@ -65,6 +74,10 @@ public class SecurityConfig {
                         .requestMatchers("/member/logout").permitAll()
                         .anyRequest().authenticated() // 이외의 요청은 로그인을 해야함
                 )
+
+                // JWT 검증 필터를, 스프링 시큐리티의 필터 체인중 어느 부분에 관여하게 할지를 명시
+                .addFilterBefore(jwtAuthFilter, AuthenticationFilter.class)
+
                 .build();
     }
     

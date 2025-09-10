@@ -59,9 +59,15 @@
             data: JSON.stringify({
                 id:$("input[name='id']").val(),
                 pwd:$("input[name='pwd']").val(),
+                deviceId:"browser",
             }),
             success:function(data){
                 console.log(data);
+                localStorage.setItem("accessToken", data.accessToken);
+                localStorage.setItem("deviceId", "browser");
+
+                // 로그인 성공 후 메인 페이지 이동
+                location.href="/index.html";
             },
             error:function(xhr){
                 console.log(xhr.responseText);
