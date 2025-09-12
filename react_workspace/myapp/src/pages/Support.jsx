@@ -1,3 +1,3 @@
 export default function Support(){
-    return <h1>고객 센터</h1>;
+    return <h1>고객센터</h1>;
 }
