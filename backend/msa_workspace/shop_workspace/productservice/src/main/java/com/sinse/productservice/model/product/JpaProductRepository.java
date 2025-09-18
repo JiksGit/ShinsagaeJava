@@ -1,4 +1,7 @@
 package com.sinse.productservice.model.product;
 
-public interface JpaProductRepository {
+import com.sinse.productservice.domain.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface JpaProductRepository extends JpaRepository<Product, Integer>{
 }

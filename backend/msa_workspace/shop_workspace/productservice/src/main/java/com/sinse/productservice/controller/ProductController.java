@@ -1,6 +1,9 @@
 package com.sinse.productservice.controller;
 
 import com.sinse.productservice.controller.dto.ProductDTO;
+import com.sinse.productservice.domain.Product;
+import com.sinse.productservice.domain.SubCategory;
+import com.sinse.productservice.model.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +17,41 @@ import java.util.Map;
 @RestController
 public class ProductController {
 
+    private ProductService productService;
+
+    public  ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
     @GetMapping("/products")
     public ResponseEntity<?> products() {
         return ResponseEntity.ok(Map.of("data", List.of("노트북", "스마트폰", "태블릿")));
     }
-
-    // 파일업로드 요청 처리
+    //파일업로드 요청 처리
     @PostMapping(value="/products", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> regist(@ModelAttribute ProductDTO productDTO, @RequestPart List<MultipartFile> files) {
-        log.debug("넘겨받은 상품명은 : " +productDTO.getProductName());
-        log.debug("넘겨받은 id는 : " +productDTO.getProductId());
-        log.debug("넘겨받은 브랜드는 : " +productDTO.getBrand());
-        log.debug("넘겨받은 가격은 : " +productDTO.getPrice());
-        log.debug("넘겨받은 파일 수는 : " +productDTO.getFiles().size());
+        log.debug("넘겨받은 이미지 수는 "+files.size());
+
+        log.debug("서브 카테고리는 "+productDTO.getSubCategoryDTO().getSubCategoryId());
+        log.debug("상품명"+productDTO.getProductName());
+        log.debug("브랜드"+productDTO.getBrand());
+        log.debug("가격"+productDTO.getPrice());
+        log.debug("할인가"+productDTO.getDiscount());
+        log.debug("상세설명"+productDTO.getDetail());
+
+        //서비스에게 !!
+        Product product = new Product();
+
+        product.setProductName(productDTO.getProductName());
+        product.setBrand(productDTO.getBrand());
+        product.setPrice(productDTO.getPrice());
+        product.setDiscount(productDTO.getDiscount());
+        product.setDetail(productDTO.getDetail());
+        SubCategory subCategory = new SubCategory();
+        subCategory.setSubCategoryId(productDTO.getSubCategoryDTO().getSubCategoryId());
+        product.setSubCategory(subCategory);
+
+        productService.save(product, files);
 
         return ResponseEntity.ok(Map.of("result", "업로드 성공"));
     }

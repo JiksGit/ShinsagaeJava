@@ -1,0 +1,42 @@
+<script>
+    // Promise는 자바스크립트에서 비동기 작업을 보다 체계적으로 처리하기 위한 객체
+    // resolve, reject 그냥 매개변수명이며, 개발자가 임의로 이름 부여 가능
+    // resolve, rect는 함수이다!
+    // Promise 내부적으로 3개의 상태를 갖는다.
+    // 대기(Pending), 확정(fullfilled)
+    const p = new Promise((resolve, reject)=>{
+        setTimeout( function(){
+            // resolve("서버와 통신 성공"); // Promise의 상태가 확정되어버림 과 동시에 then()을 호출
+            reject("서버와의 통신 실패"); // Promise의 상태를 실패로 처리함과 동시에 catch() 호출
+        }, 3000);
+    });
+    // p.then((msg)=>{
+    //     console.log(msg);
+    // }).catch((err)=>{
+    //     console.log(err);
+    // });
+
+    // Promise를 좀더 편하게 사용하려면? async/await
+    // async 키워드가 붙은 run() 함수는 절대로 비동기 함수가 아니다
+    // 단지, async는 Promise를 사용하기 쉽게 제공되는 또하나의 방법
+    // async가 붙혀진 함수는 반드시, Promise 객체를 반환한다는 의미일 뿐이다
+    console.log("1");
+    async function run(){
+        // return 5; // Promise.resolve(5);
+        // run() 내에서 Promise 사용하자
+        // await p;
+        try{
+           console.log("2"); 
+           const msg = await p; // awiat p가 resolve 될 때까지 대기..
+           console.log("3 성공", msg);
+        } catch(err){
+            console.log("실패", err);
+        }
+        console.log("4");
+    }   
+    console.log("5");
+    run(); // run은 비동기함수가 아니라서 바로 6이 아니라 run() 안에 메서드 시작
+    console.log("6");
+    // 1 5 2 6 3 4
+
+</script>
