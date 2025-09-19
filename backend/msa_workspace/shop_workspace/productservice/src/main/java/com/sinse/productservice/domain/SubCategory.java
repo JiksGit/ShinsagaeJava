@@ -12,10 +12,11 @@ public class SubCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subcategory_id")
     private Integer subCategoryId;
+
     @Column(name="subcategory_name")
     private String subcategoryName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="topcategory_id")
     private TopCategory topcategory;
 }

@@ -1,6 +1,8 @@
 package com.sinse.productservice.controller;
 
 import com.sinse.productservice.controller.dto.ProductDTO;
+import com.sinse.productservice.controller.dto.ProductFileDTO;
+import com.sinse.productservice.controller.dto.SubCategoryDTO;
 import com.sinse.productservice.domain.Product;
 import com.sinse.productservice.domain.SubCategory;
 import com.sinse.productservice.model.product.ProductService;
@@ -10,11 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
+@RequestMapping("/productapp")
 public class ProductController {
 
     private ProductService productService;
@@ -23,9 +27,87 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<?> select(@PathVariable int productId) {
+        Product product = productService.select(productId);
+
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setProductId(product.getProductId());
+        productDTO.setProductName(product.getProductName());
+        productDTO.setBrand(product.getBrand());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setDiscount(product.getDiscount());
+        productDTO.setDetail(product.getDetail());
+
+        // SubCategory 옮기기
+        SubCategoryDTO subCategoryDTO = new SubCategoryDTO();
+        subCategoryDTO.setSubCategoryId(product.getSubCategory().getSubCategoryId());
+        subCategoryDTO.setSubcategoryName(product.getSubCategory().getSubcategoryName());
+
+        productDTO.setSubCategoryDTO(subCategoryDTO);
+
+        // ProductFile도 옮기기 List에 담기(함수형 프로그래밍)
+        List<ProductFileDTO> productFileDTOList = product.getProductFileList().stream()
+                .map(pf ->{
+                    ProductFileDTO productFileDTO = new ProductFileDTO();
+                    productFileDTO.setProductFileId(pf.getProductFileId());
+                    productFileDTO.setFilename(pf.getFilename());
+                    productFileDTO.setContentType(pf.getContentType());
+                    productFileDTO.setOriginalName(pf.getOriginalName());
+                    productFileDTO.setFilesize(pf.getFilesize());
+                    productFileDTO.setFilepath(pf.getFilepath());
+
+                    return productFileDTO;
+                })
+                .toList();
+
+        productDTO.setProductFileDTO(productFileDTOList);
+        return ResponseEntity.ok(Map.of("result", productDTO));
+    }
+
     @GetMapping("/products")
     public ResponseEntity<?> products() {
-        return ResponseEntity.ok(Map.of("data", List.of("노트북", "스마트폰", "태블릿")));
+        List<Product> productList = productService.selectAll();
+
+        List<ProductDTO> productDTOList = productList.stream()
+                .map(product->{
+                    ProductDTO productDTO = new ProductDTO();
+                    productDTO.setProductId(product.getProductId());
+                    productDTO.setProductName(product.getProductName());
+                    productDTO.setPrice(product.getPrice());
+                    productDTO.setBrand(product.getBrand());
+                    productDTO.setDiscount(product.getDiscount());
+                    productDTO.setDetail(product.getDetail());
+
+                    // SubCategory 옮기기
+                    SubCategoryDTO subCategoryDTO = new SubCategoryDTO();
+                    subCategoryDTO.setSubCategoryId(product.getSubCategory().getSubCategoryId());
+                    subCategoryDTO.setSubcategoryName(product.getSubCategory().getSubcategoryName());
+
+                    productDTO.setSubCategoryDTO(subCategoryDTO);
+
+                    // ProductFile도 옮기기 List에 담기(함수형 프로그래밍)
+                    List<ProductFileDTO> productFileDTOList = product.getProductFileList().stream()
+                                    .map(pf ->{
+                                        ProductFileDTO productFileDTO = new ProductFileDTO();
+                                        productFileDTO.setProductFileId(pf.getProductFileId());
+                                        productFileDTO.setFilename(pf.getFilename());
+                                        productFileDTO.setContentType(pf.getContentType());
+                                        productFileDTO.setOriginalName(pf.getOriginalName());
+                                        productFileDTO.setFilesize(pf.getFilesize());
+                                        productFileDTO.setFilepath(pf.getFilepath());
+
+                                        return productFileDTO;
+                                    })
+                                    .toList();
+
+                    productDTO.setProductFileDTO(productFileDTOList);
+
+                    return productDTO;
+                })
+                .toList();
+
+        return ResponseEntity.ok(Map.of("result", productDTOList));
     }
     //파일업로드 요청 처리
     @PostMapping(value="/products", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -9,6 +9,7 @@ import MemberList from './pages/member/MemberList'
 import MemberForm from './pages/member/MemberForm'
 import OrderList from './pages/order/OrderList'
 import OrderForm from './pages/order/OrderForm'
+import ProductDetail from './pages/product/ProductDetail'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           <Routes>
             {/* 상품 관련 2개 */}
             <Route path="/product/list" element={<ProductList/>}/>
+            <Route path="/product/detail/:productId" element={<ProductDetail/>}></Route>
             <Route path="/product/registform" element={<ProductForm/>}/>
             {/* 회원 관련 2개 */}
             <Route path="/member/list" element={<MemberList/>}/>
